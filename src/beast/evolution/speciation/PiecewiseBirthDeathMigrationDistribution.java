@@ -751,7 +751,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			for (int i = (reverse?0:1); i < dim; i++) {
 				end = reverse ? (maxTime - intervalTimes.getValue(dim - i - 1)) : intervalTimes.getValue(i);
 				if (relative) end *= maxTime;
-				if (end < maxTime) changeTimes.add(end);
+				if (end < maxTime) changeTimes.add(end); //TODO does this mean that change times can never be input in absolute time? It looks like it does.
 			}
 
 			if (adjustTimesInput.get()!=null){
@@ -775,7 +775,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			}
 			end = maxTime;
 
-			changeTimes.add(end);
+			changeTimes.add(end); //TODO: why is the end time always a change point? Here, it seems that 'end' always refers to the size of the time interval between the first and the last sample. I don't necessarily want it to be a change point.
 		}
 	}
 
