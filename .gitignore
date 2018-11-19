@@ -21,7 +21,6 @@
 /*.newick
 /*.nexus
 /src/beast/math/*Temp.java
-/src/treeSimulator/
 
 # MacOS cruft
 .DS_Store
