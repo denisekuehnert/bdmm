@@ -285,6 +285,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 	protected BooleanParameter rateMatrixFlags;
 
+	//TODO maybe change type to HashMap (then no need to resize array)
 	public double[] weightOfNodeSubTree;
 
 	double parallelizationThreshold;
@@ -459,7 +460,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 		collectTimes(T);
 		setRho();
 
-		weightOfNodeSubTree = new double[ntaxa * 2];
+		weightOfNodeSubTree = new double[2*ntaxa];
 
 		isParallelizedCalculation = isParallelizedCalculationInput.get();
 		minimalProportionForParallelization = minimalProportionForParallelizationInput.get();
@@ -639,6 +640,9 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 		// add length of parental branch
 		weight += node.getLength();
 		// store the value
+		if(node.getNr() >= weightOfNodeSubTree.length)
+			throw new IndexOutOfBoundsException("Node number is not between 0 and ntaxa-1. This should be the case according to Node specifications.");
+
 		weightOfNodeSubTree[node.getNr()] = weight;
 
 		return weight;
