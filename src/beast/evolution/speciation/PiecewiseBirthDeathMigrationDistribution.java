@@ -466,7 +466,6 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 		minimalProportionForParallelization = minimalProportionForParallelizationInput.get();
 
 		if(isParallelizedCalculation) executorBootUp();
-
 	}
 
 	/**
@@ -1206,11 +1205,13 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	Boolean[] identicalRatesForAllTypes;
 
 	static void executorBootUp(){
+	    if(executor != null && !executor.isShutdown()) // if executor has already been booted up, and not shutdown, do not boot it up again.
+	        return;
 		executor = Executors.newCachedThreadPool();
 		pool = (ThreadPoolExecutor) executor;
 	}
 
-	static void executorShutdown(){
+	public static void executorShutdown(){
 		pool.shutdown();
 	}
 
