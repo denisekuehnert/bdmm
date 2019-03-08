@@ -560,7 +560,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 					// check if data set is contemp!
 					for (Node node : treeInput.get().getExternalNodes()){
-						if (node.getHeight()>0.) throw new RuntimeException("Error in analysis setup: Parameters set for entirely contemporaneously sampled data, but some nodeheights are > 0!");
+						if (node.getHeight()>globalPrecisionThreshold*1E5 ) throw new RuntimeException("Error in analysis setup: Parameters set for entirely contemporaneously sampled data, but some nodeheights are > 0!"); // TODO improve the threhsold limit or have a way to circumvent it
 					}
 
 					contempData = true;
@@ -740,7 +740,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			changeTimes.add(end);
 
 		} else {
-
+			//TODO remove this check for rho-sampling times
 			if (!reverse && intervalTimes.getValue(0) != 0.0) {
 				throw new RuntimeException("First time in interval times parameter should always be zero.");
 			}

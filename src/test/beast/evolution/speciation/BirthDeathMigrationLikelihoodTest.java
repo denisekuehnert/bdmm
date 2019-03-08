@@ -1,5 +1,6 @@
 package test.beast.evolution.speciation;
 
+import beast.core.parameter.BooleanParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.*;
 import beast.util.TreeParser;
@@ -7,6 +8,7 @@ import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -281,6 +283,117 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 		bdmMT.initAndValidate();
 		assertEquals(-7.404227, bdmMT.calculateLogP(), 1e-4);   // this result is from R: LikConstant(2.25,1.5,0.01,c(4.5,5.5,5.5+1e-100),root=0,survival=1)
 	}
+
+//	@Test
+//	public void testLikelihoodSimpleRho2demes() throws Exception {
+//
+//		// 3 tips
+//		String treeStr = "((1:1.0,2:1.0):1.0,3:2.0)0.0;";
+//
+//		String tipTypes = "1=1,2=1,3=1";
+//
+//		BirthDeathMigrationModelUncoloured bdm = new BirthDeathMigrationModelUncoloured();
+//
+//		String[] taxaNames = new String[]{"1", "2", "3"};
+//		List<Taxon> taxaList = Taxon.createTaxonList(Arrays.asList(taxaNames));
+//		TaxonSet taxonSet = new TaxonSet(taxaList);
+//
+//		Tree tree = new TreeParser();
+//		tree.setInputValue("taxonset", taxonSet);
+//		tree.setInputValue("adjustTipHeights", "false");
+//		tree.setInputValue("IsLabelledNewick", "true");
+//		tree.setInputValue("newick", treeStr);
+//		tree.initAndValidate();
+//
+//		TraitSet trait = new TraitSet();
+//		trait.setInputValue("taxa", taxonSet);
+//		trait.setInputValue("value", tipTypes);
+//		trait.setInputValue("traitname", "tiptypes");
+//		trait.initAndValidate();
+//
+//		bdm.setInputValue("tree", tree);
+//		bdm.setInputValue("tiptypes", trait);
+//
+//
+//		bdm.setInputValue("stateNumber", "2");
+//		bdm.setInputValue("migrationMatrix", "0.1 0.1");
+//		bdm.setInputValue("frequencies", "0.5 0.5");
+//
+//		bdm.setInputValue("birthRate", new RealParameter("0.222222222 0.222222222"));
+//		bdm.setInputValue("deathRate", new RealParameter("0.1 0.1"));
+//		bdm.setInputValue("samplingRate", new RealParameter("0. 0."));
+//		bdm.setInputValue("rho", new RealParameter("1.0 1.0"));
+//		bdm.setInputValue("rhoSamplingTimes", new RealParameter("0.0"));
+//		bdm.setInputValue("reverseTimeArrays", new BooleanParameter("false false false true false false"));
+////		bdm.setInputValue("contemp", Boolean.TRUE);
+//
+//		bdm.setInputValue("conditionOnSurvival", true);
+//
+//		bdm.initAndValidate();
+//		double logL = bdm.calculateLogP();
+//
+//		assertEquals(-5.5884600307, logL, 1e-4);   // this result is from the BiSSE implementation of Fabio Mendes
+//	}
+//
+//	@Test
+//	public void testLikelihoodSingleRho2demes() throws Exception {
+//		// 50 tips
+//		String treeStr = "(((15:10.27880339,(57:0.4327353378,58:0.4327353378):9.846068053):21.30935137,((((49:1.322566942,50:1.322566942):6.531246386,(((((42:1.618558172,43:1.618558172):1.249323508,37:2.86788168):0.4105311845,36:3.278412865)" +
+//				":1.110829025,28:4.38924189):2.453996398,((53:0.6765630317,54:0.6765630317):5.834067793,21:6.510630824):0.3326074635):1.01057504):6.546385565,12:14.40019889):3.891878236,((((18:8.595427361,((19:6.988162304," +
+//				"((39:1.941330272,(59:0.4256083779,60:0.4256083779):1.515721894):1.374985348,35:3.31631562):3.671846684):1.028692949,(24:5.527011086,(25:5.478875203,(40:1.898502308,41:1.898502308):3.580372894):0.04813588287):2.489844168):0.5785721075):0.8605508177," +
+//				"((47:1.324188282,48:1.324188282):1.210143714,38:2.534331996):6.921646183):1.848794077,(22:6.144323416,23:6.144323416):5.160448839):4.752352041,10:16.0571243):2.234952832):13.29607763):8.9940146,(6:33.80408947,(((29:4.271294196,30:4.271294196):3.963360008," +
+//				"(46:1.515605972,(51:0.6842469553,52:0.6842469553):0.8313590168):6.719048232):21.69107479,((((44:1.517683119,45:1.517683119):13.83340518,((33:3.451233406,34:3.451233406):7.318030201,14:10.76926361):4.581824694):2.3268441," +
+//				"((31:3.988873926,32:3.988873926):13.39833,(26:5.46221229,27:5.46221229):11.92499164):0.2907284735):12.10203097,((16:9.676541191,17:9.676541191):11.55054389," +
+//				"(11:16.00734921,(55:0.6152478573,56:0.6152478573):15.39210136):5.219735869):8.552878292):0.1457656227):3.878360468):6.778079891):0.0;";
+//
+//		String tipTypes = "6=0,10=0,11=0,12=0,14=1,15=0,16=1,17=1,18=0,19=0,21=0,22=0,23=0,24=0,25=0," +
+//				"26=1,27=1,28=0,29=1,30=1,31=1,32=1,33=1,34=1,35=0,36=0,37=1,38=1,39=0,40=0," +
+//				"41=0,42=1,43=1,44=1,45=1,46=1,47=1,48=1,49=0,50=0,51=1,52=1,53=0,54=0,55=1,56=1,57=0,58=0,59=0,60=0";
+//
+//		BirthDeathMigrationModelUncoloured bdm =  new BirthDeathMigrationModelUncoloured();
+//
+//		String[] taxaNames = new String[] { "6", "10", "11", "12", "14", "15", "16", "17", "18", "19", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60" };
+//		List<Taxon> taxaList = Taxon.createTaxonList(Arrays.asList(taxaNames));
+//		TaxonSet taxonSet = new TaxonSet(taxaList);
+//
+//		Tree tree = new TreeParser();
+//		tree.setInputValue("taxonset", taxonSet);
+//		tree.setInputValue("adjustTipHeights", "false");
+//		tree.setInputValue("IsLabelledNewick", "true");
+//		tree.setInputValue("newick", treeStr);
+//		tree.initAndValidate();
+//
+//		TraitSet trait = new TraitSet();
+//		trait.setInputValue("taxa", taxonSet);
+//		trait.setInputValue("value", tipTypes);
+//		trait.setInputValue("traitname", "tiptypes");
+//		trait.initAndValidate();
+//
+//		bdm.setInputValue("tree", tree);
+//		bdm.setInputValue("tiptypes", trait);
+//
+//
+//		bdm.setInputValue("stateNumber", "2");
+//		bdm.setInputValue("migrationMatrix", "0.05 0.05");
+//		bdm.setInputValue("frequencies", "0.5 0.5");
+//
+//		bdm.setInputValue("birthRate", new RealParameter("0.15 0.3"));
+//		bdm.setInputValue("deathRate", new RealParameter("0.1 0.1"));
+//		bdm.setInputValue("samplingRate", new RealParameter("0. 0."));
+//		bdm.setInputValue("rho", new RealParameter("1.0 1.0"));
+//		bdm.setInputValue("rhoSamplingTimes", new RealParameter("0.0"));
+//		bdm.setInputValue("reverseTimeArrays", new BooleanParameter("false false false true false false"));
+////		bdm.setInputValue("contemp", Boolean.TRUE);
+//
+//		bdm.setInputValue("conditionOnSurvival", false);
+//
+//		bdm.initAndValidate();
+//
+//		double logL = bdm.calculateLogP();
+//
+//		assertEquals(-198.25144916399813, logL, 1e-4);   // this result is from the BiSSE implementation of Fabio Mendes
+//
+//	}
 
 	/**
 	 * Basic test for rho-sampling in the past
