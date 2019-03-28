@@ -844,7 +844,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 				state =  i/totalIntervals;
 
 				rho[i]= rhoChanges>0?
-						rhoSamplingChangeTimes.contains(times[i]) ? rhos[rhos.length > n ? (rhoChanges+1)*state+index(times[i%totalIntervals], rhoSamplingChangeTimes) : state] : 0.
+						rhoSamplingChangeTimes.contains(times[i%totalIntervals]) ? rhos[rhos.length > n ? (rhoChanges+1)*state+index(times[i%totalIntervals], rhoSamplingChangeTimes) : state] : 0.
 						: rhos[0];
 			}
 		}
