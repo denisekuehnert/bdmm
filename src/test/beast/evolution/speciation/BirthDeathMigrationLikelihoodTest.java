@@ -67,7 +67,6 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 		assertEquals(-6.7022069383966025, logL, 1e-5);   // Reference BDMM (version 	0.2.0) 22/06/2017	
 
 		// Test for coloured tree
-
 		String treeCol = "(1[&state=1]:28.0, (2[&state=1]:29.0, (3[&state=0]:22.0)[&state=1]:2.0)[&state=1]:0.5)[&state=1]:0.0;";
 		String origCol="36.";
 
@@ -88,7 +87,6 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 
 		System.out.println("Birth-death result: " + logL2 + "\t- Test LikelihoodMigRateChange 2");
 
-//		assertEquals(-32.67575452839993, logL2, 1e-5); // Reference BDMM (version 	0.2.0) 22/06/2017
 		assertEquals(-199.03107787182546, logL2, 1e-5); // Reference BDMM (version 	0.2.0) 24/08/2017
 	}
 
@@ -101,7 +99,7 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 	@Test 
 	public void testLikelihoodRemovalProbChangeBasic() throws Exception{
 
-		String newick = "((1[&type=0]: 1.5, 2[&type=0]: 0)3[&type=0]: 3.5, 4[&type=0]: 4) ;";
+		String newick = "((1[&state=0]: 1.5, 2[&state=0]: 0)3[&state=0]: 3.5, 4[&state=0]: 4)[&state=0]:1.0 ;";
 
 		String orig="6.";
 		String stateNumber = "1";
@@ -132,13 +130,13 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 		BirthDeathMigrationModelUncoloured bdm =  new BirthDeathMigrationModelUncoloured();
 
 		bdm.setInputValue("tree", tree);
-		bdm.setInputValue("typeLabel", "type");
+		bdm.setInputValue("typeLabel", "state");
 
 
 		double logL2 = bdm_likelihood(stateNumber,
 				migrationMatrix,
 				frequencies,
-				tree, "type",
+				tree, "state",
 				"1.", // origin is defined at 1. instead of 6. because bdm_likelihood adds the height of the root of the tree to that value (here 5.)
 				R0,null,
 				becomeUninfectiousRate,
@@ -159,7 +157,8 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 	@Test
 	public void testLikelihoodRemovalProbChangeTwoState() throws Exception{
 
-		String newick = "((1[&type=0]: 1.5, 2[&type=1]: 0)3[&type=0]: 3.5, 4[&type=1]: 4) ;";
+//		String newick = "((1[&type=0]: 1.5, 2[&type=1]: 0)3[&type=0]: 3.5, 4[&type=1]: 4) ;"; // original
+		String newick = "((1[&state=0]: 1.5, 2[&state=0]: 0)3[&state=0]: 3.5, (4[&state=1]: 3)[&state=0]:1)[&state=0]:1.0 ;";
 
 		String orig="6.";
 		String stateNumber = "2";
@@ -182,21 +181,21 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 
 			//	System.out.println("Birth-death result 1: " +logL + "\t- Test LikelihoodRemovalProbChangeTwoState");
 
-		assertEquals(-22.20607074371644, logL, 1e-5); // Reference BDMM (version 	0.2.0) 29/03/2018
+		assertEquals(-23.560160849283708, logL, 1e-5); // Reference BDMM (version  0.3.3) 01/07/2019
 
 		//uncoloured tree
-		Tree tree = new TreeParser(newick ,false);
+		Tree tree = new TreeParser("((1[&state=0]: 1.5, 2[&state=0]: 0)3[&state=0]: 3.5, 4[&state=1]:4 )[&state=0]:1.0 ;",false);
 
 		BirthDeathMigrationModelUncoloured bdm =  new BirthDeathMigrationModelUncoloured();
 
 		bdm.setInputValue("tree", tree);
-		bdm.setInputValue("typeLabel", "type");
+		bdm.setInputValue("typeLabel", "state");
 
 
 		double logL2 = bdm_likelihood(stateNumber,
 				migrationMatrix,
 				frequencies,
-				tree, "type",
+				tree, "state",
 				"1.", // origin is defined at 1. instead of 6. because bdm_likelihood adds the height of the root of the tree to that value (here 5.)
 				R0,null,
 				becomeUninfectiousRate,
@@ -205,7 +204,7 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 
 	//	System.out.println("Birth-death result 2: " +logL2 + "\t- Test LikelihoodRemovalProbChangeTwoState 2");
 
-		assertEquals(-21.185194919464568, logL2, 1e-5); // Reference BDMM (version 	0.2.0) 29/03/2018
+		assertEquals(-20.55555966769071, logL2, 1e-5); // Reference BDMM (version 	0.3.3) 01/07/2019
 	}
 
 
@@ -255,7 +254,7 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 		MultiTypeTreeFromNewick treeMT = new MultiTypeTreeFromNewick();
 		treeMT.initByName(
 				"adjustTipHeights", false,
-				"value", "((1[&type=0]: 4.5, 2[&type=0]: 4.5):1,3[&type=0]:5.5);",
+				"value", "((1[&type=0]: 4.5, 2[&type=0]: 4.5)[&type=0]:1,3[&type=0]:5.5)[&type=0]:0.0;",
 				"typeLabel", "type");
 
 		BirthDeathMigrationModel bdmMT =  new BirthDeathMigrationModel();
@@ -444,7 +443,7 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 		MultiTypeTreeFromNewick treeMT = new MultiTypeTreeFromNewick();
 		treeMT.initByName(
 				"adjustTipHeights", false,
-				"value", "(3[&type=0]: 1.5, 4[&type=0]: 4) ;",
+				"value", "(3[&type=0]: 1.5, 4[&type=0]: 4)[&type=0] ;",
 				"typeLabel", "type");
 
 		BirthDeathMigrationModel bdmc =  new BirthDeathMigrationModel();
@@ -1444,7 +1443,7 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 //
 //		String becomeUninfectiousRate = "0.5 0.45 0.55";
 //		String samplingProportion = "0.5 0.333333 0.45";
-//	
+//
 //		boolean conditionOnSurvival = false;
 //
 //		double logL = bdm_likelihood(stateNumber,
@@ -1656,7 +1655,7 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 		MultiTypeTreeFromNewick treeMT = new MultiTypeTreeFromNewick();
 		treeMT.initByName(
 				"adjustTipHeights", false,
-				"value", "((3[&type=0]: 1.5, 6[&type=0]: 0)5[&type=0]: 3.5, 4[&type=0]: 4) ;",
+				"value", "((3[&type=0]: 1.5, 6[&type=0]: 0)5[&type=0]: 3.5, 4[&type=0]: 4)[&type=0] ;",
 				"typeLabel", "type");
 
 
@@ -1730,7 +1729,7 @@ public class BirthDeathMigrationLikelihoodTest extends TestCase {
 		MultiTypeTreeFromNewick treeMT = new MultiTypeTreeFromNewick();
 		treeMT.initByName(
 				"adjustTipHeights", false,
-				"value", "((3[&type=0]: 1.5, 6[&type=0]: 0)5[&type=0]: 3.5, 4[&type=0]: 4) ;",
+				"value", "((3[&type=0]: 1.5, 6[&type=0]: 0)5[&type=0]: 3.5, 4[&type=0]: 4)[&type=0] ;",
 				"typeLabel", "type");
 
 
