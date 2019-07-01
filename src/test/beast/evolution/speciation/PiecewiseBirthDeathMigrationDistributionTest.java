@@ -149,7 +149,7 @@ public class PiecewiseBirthDeathMigrationDistributionTest extends TestCase {
         tree.initByName(
                 "adjustTipHeights", false,
                 "value", treeString,
-                "typeLabel", "type");
+                "typeLabel", "state");
 
         BirthDeathMigrationModel bdmm = new BirthDeathMigrationModel();
 
@@ -196,7 +196,7 @@ public class PiecewiseBirthDeathMigrationDistributionTest extends TestCase {
         tree.initByName(
                 "adjustTipHeights", false,
                 "value", treeString,
-                "typeLabel", "type");
+                "typeLabel", "state");
 
         BirthDeathMigrationModel bdmm = new BirthDeathMigrationModel();
 
@@ -243,7 +243,7 @@ public class PiecewiseBirthDeathMigrationDistributionTest extends TestCase {
         tree.initByName(
                 "adjustTipHeights", false,
                 "value", treeString,
-                "typeLabel", "type");
+                "typeLabel", "state");
 
         BirthDeathMigrationModel bdmm = new BirthDeathMigrationModel();
 
