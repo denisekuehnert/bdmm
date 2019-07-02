@@ -118,7 +118,7 @@
       <echo>Downloading dependencies...</echo>
 
       <echo>MultiTypeTree:</echo>
-      <get src="https://github.com/tgvaughan/MultiTypeTree/releases/download/v7.0.0/MultiTypeTree.v7.0.0.zip"
+      <get src="https://github.com/tgvaughan/MultiTypeTree/releases/download/v7.0.1/MultiTypeTree.v7.0.1.zip"
            dest="${build-lib}/MultiTypeTree.zip"/>
       <mkdir dir="${build-lib}/MultiTypeTree"/>
       <unzip src="${build-lib}/MultiTypeTree.zip" dest="${build-lib}/MultiTypeTree"/>
@@ -127,7 +127,7 @@
       </move>
 
       <echo>MASTER:</echo>
-      <get src="https://github.com/tgvaughan/MASTER/releases/download/v6.0.0/MASTER.package.v6.0.0.zip"
+      <get src="https://github.com/tgvaughan/MASTER/releases/download/v6.0.1/MASTER.package.v6.0.1.zip"
            dest="${build-lib}/MASTER.zip"/>
       <mkdir dir="${build-lib}/MASTER"/>
       <unzip src="${build-lib}/MASTER.zip" dest="${build-lib}/MASTER"/>
