@@ -34,6 +34,12 @@ public class RandomMultiTypeTreeFromBDMM extends MultiTypeTree implements StateN
     public Input<RealParameter> samplingRateInput =
             new Input<>("samplingRate", "The sampling rate per individual", Input.Validate.REQUIRED);      // psi-sampling
 
+    public Input<RealParameter> rhoSamplingProbabilityInput =
+            new Input<>("rhoSamplingProbability", "Rho-sampling probability for each type.");
+
+    public Input<RealParameter> rhoSamplingTimeInput =
+            new Input<>("rhoSamplingTime", "This time is considered as being the 'present'. If  ");
+
     public Input<RealParameter> removalProbabilityInput =
             new Input<>("removalProbability", "The removal probability   for each type");
 
