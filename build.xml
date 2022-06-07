@@ -135,6 +135,15 @@
         <fileset dir="${build-lib}/MASTER/lib" includes="*.jar"/>
       </move>
 
+      <echo>SA:</echo>
+      <get src="https://github.com/CompEvol/sampled-ancestors/releases/download/v2.0.2/SA.v2.0.2.zip"
+           dest="${build-lib}/SA.zip"/>
+      <mkdir dir="${build-lib}/SA"/>
+      <unzip src="${build-lib}/SA.zip" dest="${build-lib}/SA"/>
+      <move todir="${build-lib}">
+        <fileset dir="${build-lib}/SA/lib" includes="*.jar"/>
+      </move>
+
     </target>
 
     <!-- Compile -->
