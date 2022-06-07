@@ -657,31 +657,31 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 		getChangeTimes(maxTime, migChangeTimes,
 				migChangeTimesInput.get() != null ? migChangeTimesInput.get() : intervalTimes.get(),
-				migChanges, migTimesRelative, reverseTimeArrays[5]);
+				migChanges, migTimesRelative, reverseTimeArrays[5], false);
 
 		getChangeTimes(maxTime, birthRateChangeTimes,
 				birthRateChangeTimesInput.get() != null ? birthRateChangeTimesInput.get() : intervalTimes.get(),
-				birthChanges, birthRateTimesRelative, reverseTimeArrays[0]);
+				birthChanges, birthRateTimesRelative, reverseTimeArrays[0], false);
 
 		getChangeTimes(maxTime, b_ijChangeTimes,
 				b_ijChangeTimesInput.get() != null ? b_ijChangeTimesInput.get() : intervalTimes.get(),
-				b_ij_Changes, b_ijTimesRelative, reverseTimeArrays[0]);
+				b_ij_Changes, b_ijTimesRelative, reverseTimeArrays[0], false);
 
 		getChangeTimes(maxTime, deathRateChangeTimes,
 				deathRateChangeTimesInput.get() != null ? deathRateChangeTimesInput.get() : intervalTimes.get(),
-				deathChanges, deathRateTimesRelative, reverseTimeArrays[1]);
+				deathChanges, deathRateTimesRelative, reverseTimeArrays[1], false);
 
 		getChangeTimes(maxTime, samplingRateChangeTimes,
 				samplingRateChangeTimesInput.get() != null ? samplingRateChangeTimesInput.get() : intervalTimes.get(),
-				samplingChanges, samplingRateTimesRelative, reverseTimeArrays[2]);
+				samplingChanges, samplingRateTimesRelative, reverseTimeArrays[2], false);
 
 		getChangeTimes(maxTime, rhoSamplingChangeTimes,
 				rhoSamplingTimes.get()!=null ? rhoSamplingTimes.get() : intervalTimes.get(),
-				rhoChanges, false, reverseTimeArrays[3]);
+				rhoChanges, false, reverseTimeArrays[3], true);
 
 		if (SAModel) getChangeTimes(maxTime, rChangeTimes,
 				removalProbabilityChangeTimesInput.get() != null ? removalProbabilityChangeTimesInput.get() : intervalTimes.get(),
-				rChanges, rTimesRelative, reverseTimeArrays[4]);
+				rChanges, rTimesRelative, reverseTimeArrays[4], false);
 
 		for (Double time : migChangeTimes) {
 			timesSet.add(time);
@@ -723,7 +723,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	/**
 	 * set change times
 	 */
-	public void getChangeTimes(double maxTime, List<Double> changeTimes, RealParameter intervalTimes, int numChanges, boolean relative, boolean reverse) {
+	public void getChangeTimes(double maxTime, List<Double> changeTimes, RealParameter intervalTimes, int numChanges, boolean relative, boolean reverse, boolean isPointEvent) {
 		changeTimes.clear();
 
 		if (intervalTimes == null) { //equidistant
@@ -739,8 +739,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			changeTimes.add(end);
 
 		} else {
-			//TODO remove this check for rho-sampling times
-			if (!reverse && intervalTimes.getValue(0) != 0.0) {
+			if (!reverse && intervalTimes.getValue(0) != 0.0 && !isPointEvent) {
 				throw new RuntimeException("First time in interval times parameter should always be zero.");
 			}
 

@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 		"This should only be used when the migration process along the phylogeny is important. Otherwise the computationally less intense BirthDeathMigrationModelUncoloured can be employed.")
 public class BirthDeathMigrationModel extends PiecewiseBirthDeathMigrationDistribution {
 
-	// !!! TODO: test birth among deme implementation!!!
+	// !!! TODO: extensively test birth among deme implementation!!!
 
 	public Input<MultiTypeRootBranch> originBranchInput =
 			new Input<>("originBranch", "MultiTypeRootBranch for origin coloring");
