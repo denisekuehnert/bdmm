@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel
 :beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:beast.evolution.tree.coalescent:multitypetree.operators:multitypetree.util:master.beast:master.conditions:master.model:master.postprocessors:master.outputs:master" version="2.0">
 
-	<!-- !!!!	NOTE: THIS XML FILE REQUIRES THE INSTALLATION OF THE BEAST2 PACKAGE feast !!!! -->
+	<!-- !!!!	NOTE: THIS XML FILE REQUIRES THE INSTALLATION OF THE BEAST2 PACKAGE feast (in addition to bdmm) !!!!
+	To install BEAST packages, open BEAUTi, click File/Manage Packages, click on the package you want to install in the list, and click Install/Upgrade at the bottom of the window. -->
 
 	<!-- This XML file is an example of an XML file set up to perform inference under the multi-type birth-death model with the BEAST2 package bdmm.
 	In this example, the samples were sampled in two successive "rho-sampling" events.
