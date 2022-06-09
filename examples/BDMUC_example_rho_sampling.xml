@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel
 :beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:beast.evolution.tree.coalescent:multitypetree.operators:multitypetree.util:master.beast:master.conditions:master.model:master.postprocessors:master.outputs:master" version="2.0">
 
-	<!-- !!!!	NOTE: THIS XML FILE REQUIRES THE INSTALLATION OF THE BEAST2 PACKAGE feast (in addition to bdmm) !!!!
-	To install BEAST packages, open BEAUTi, click File/Manage Packages, click on the package you want to install in the list, and click Install/Upgrade at the bottom of the window. -->
+	<!-- NOTE: THIS XML FILE REQUIRES THE INSTALLATION
+	OF THE BEAST2 PACKAGE feast (in addition to bdmm)
+	To install BEAST packages, open BEAUTi, click File/Manage Packages,
+	click on the package you want to install in the list,
+	and click Install/Upgrade at the bottom of the window. -->
 
-	<!-- This XML file is an example of an XML file set up to perform inference under the multi-type birth-death model with the BEAST2 package bdmm.
+	<!-- This XML file is an example of an XML file set up to perform inference
+	under the multi-type birth-death model with the BEAST2 package bdmm.
 	In this example, the samples were sampled in two successive "rho-sampling" events.
-	"rho-sampling" represent a sampling procedure happening at a specific point in time at which each lineage is sampled with a probability rho.
+	"rho-sampling" represent a sampling procedure happening at a specific point
+	in time at which each lineage is sampled with a probability rho.
 	When the sampling time is the "present", rho-sampling is usually called "contemporaneous sampling".
-	The multi-type birth-death model, as implemented in bdmm, supports rho-sampling at present but also in the past.
+	The multi-type birth-death model, as implemented in bdmm,
+	supports rho-sampling at present but also in the past.
 	Multiple rho-sampling events can be defined in conjunction with sampling through time.
-	In the example presented here, there is no sampling through time (the samplingRate parameter is fixed to 0),
+	In the example presented here, there is no sampling through time
+	 (the samplingRate parameter is fixed to 0),
 	and the tree is fixed to the input tree for simplicity. -->
 
 
@@ -25,11 +32,11 @@
 	<map name="OneOnX">beast.math.distributions.OneOnX</map>
 	<map name="Normal">beast.math.distributions.Normal</map>
 
-	<tree id="tree" spec='feast.fileio.TreeFromNexusFile' fileName="bdmm_example_rho_sampling.tree"
-    IsLabelledNewick="true" adjustTipHeights="false"/>
-
-		<tree id="tree" spec="TreeParser" fileName="rho_sampling_simulated_tree.tree"
-			IsLabelledNewick="true" adjustTipHeights="false"/>
+	<tree id="tree" spec='feast.fileio.TreeFromNexusFile'
+		  fileName='/Users/scirej/Documents/BEASTdev/bdmm/examples/BDMUC_example_rho_sampling.tree'
+		  IsLabelledNewick="true" adjustTipHeights="false"/>
+	<!-- TODO: CHANGE fileName ABOVE TO YOUR LOCAL PATH -->
+	<!--		  fileName='~/Documents/BEASTdev/bdmm/examples/BDMUC_example_rho_sampling.tree'-->
 
 	<distribution spec="beast.evolution.speciation.BirthDeathMigrationModelUncoloured" id="treePrior" tree="@tree"
 				  typeLabel="type" stateNumber="2" conditionOnSurvival="true" checkRho="true">
