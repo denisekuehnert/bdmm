@@ -127,7 +127,7 @@
       </move>
 
       <echo>MASTER:</echo>
-      <get src="https://github.com/tgvaughan/MASTER/releases/download/v6.0.1/MASTER.package.v6.0.1.zip"
+      <get src="https://github.com/tgvaughan/MASTER/releases/download/v6.1.1/MASTER.package.v6.1.1.zip"
            dest="${build-lib}/MASTER.zip"/>
       <mkdir dir="${build-lib}/MASTER"/>
       <unzip src="${build-lib}/MASTER.zip" dest="${build-lib}/MASTER"/>
