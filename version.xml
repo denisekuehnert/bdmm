@@ -2,6 +2,27 @@
   <depends on='BEAST.base' atleast='2.7.2'/>
   <depends on='BEAST.app' atleast='2.7.0'/>
   <depends on="MultiTypeTree" atleast="7.1.0"/>
-  <depends on="remaster" atleast="1.0.0"/>
-  <depends on="SA" atleast="2.0.2"/>
+  <depends on="SA" atleast="2.1.0"/>
+
+
+    <service type="beast.base.core.BEASTInterface">
+        <provider classname="bdmm.app.seqgen.SimulatedAlignmentAutoTaxa"/>
+        <provider classname="bdmm.core.util.TipDatesFromTree"/>
+        <provider classname="bdmm.core.util.TipTypesFromTree"/>
+        <provider classname="bdmm.evolution.operators.ChangeTimeScaler"/>
+        <provider classname="bdmm.evolution.operators.RootBranchRetype"/>
+        <provider classname="bdmm.evolution.speciation.BirthDeathMigrationClusterModelUncoloured"/>
+        <provider classname="bdmm.evolution.speciation.BirthDeathMigrationModel"/>
+        <provider classname="bdmm.evolution.speciation.BirthDeathMigrationModelUncoloured"/>
+        <provider classname="bdmm.evolution.tree.MigrationModelForward"/>
+        <provider classname="bdmm.evolution.tree.MultiTypeRootBranch"/>
+        <provider classname="bdmm.evolution.tree.OriginTypeChangeLogger"/>
+        <provider classname="bdmm.loggers.RootProbLogger"/>
+        <provider classname="bdmm.loggers.TipTypedTreeLogger"/>
+        <provider classname="bdmm.math.distributions.BinomialDistribution"/>
+        <provider classname="bdmm.treesimulator.RandomMultiTypeTreeFromBDMM"/>
+        <provider classname="bdmm.treesimulator.RandomTipTypedTreeFromBDMM"/>
+    </service>
+
+  
 </package>

@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel
 :beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:beast.evolution.tree.coalescent:multitypetree.operators:multitypetree.util:master.beast:master.conditions:master.model:master.postprocessors:master.outputs:master" version="2.0">
 
-	<map name="Beta">beast.math.distributions.Beta</map>
-	<map name="Exponential">beast.math.distributions.Exponential</map>
-	<map name="InverseGamma">beast.math.distributions.InverseGamma</map>
-	<map name="LogNormal">beast.math.distributions.LogNormalDistributionModel</map>
-	<map name="Gamma">beast.math.distributions.Gamma</map>
-	<map name="Uniform">beast.math.distributions.Uniform</map>
-	<map name="prior">beast.math.distributions.Prior</map>
-	<map name="LaplaceDistribution">beast.math.distributions.LaplaceDistribution</map>
-	<map name="OneOnX">beast.math.distributions.OneOnX</map>
-	<map name="Normal">beast.math.distributions.Normal</map>
+	<map name="Beta">beast.base.inference.distribution.Beta</map>
+	<map name="Exponential">beast.base.inference.distribution.Exponential</map>
+	<map name="InverseGamma">beast.base.inference.distribution.InverseGamma</map>
+	<map name="LogNormal">beast.base.inference.distribution.LogNormalDistributionModel</map>
+	<map name="Gamma">beast.base.inference.distribution.Gamma</map>
+	<map name="Uniform">beast.base.inference.distribution.Uniform</map>
+	<map name="prior">beast.base.inference.distribution.Prior</map>
+	<map name="LaplaceDistribution">beast.base.inference.distribution.LaplaceDistribution</map>
+	<map name="OneOnX">beast.base.inference.distribution.OneOnX</map>
+	<map name="Normal">beast.base.inference.distribution.Normal</map>
 
-	<alignment spec="beast.evolution.alignment.Alignment" id="input_alignment" dataType="nucleotide">
+	<alignment spec="beast.base.evolution.alignment.Alignment" id="input_alignment" dataType="nucleotide">
 		<sequence spec="Sequence" taxon="1" value="?" />
 		<sequence spec="Sequence" taxon="2" value="?" />
 		<sequence spec="Sequence" taxon="3" value="?" />
@@ -200,31 +200,31 @@
 		  outputFileName="BDMUC_SequenceSimAnaLyzer_alignment.txt"
 		  tree="@mastertree">
 		<sequence spec="Sequence" taxon="dummy" value="?" />
-		<siteModel spec="beast.evolution.sitemodel.SiteModel" id="SiteModel">
+		<siteModel spec="beast.base.evolution.sitemodel.SiteModel" id="SiteModel">
 			<parameter name="mutationRate" id="mutationRate" value="0.005"/>
 			<substModel spec="JukesCantor"/>
 		</siteModel>
 	</data>
 
 
-	<distribution spec="beast.evolution.speciation.BirthDeathMigrationModelUncoloured" id="treePrior" tree="@tree"
+	<distribution spec="bdmm.evolution.speciation.BirthDeathMigrationModelUncoloured" id="treePrior" tree="@tree"
 				  typeLabel="type" stateNumber="2" conditionOnSurvival="true">
-		<migrationMatrix spec="RealParameter" id="rateMatrix" value="0.01" dimension="2" lower="0" upper="100"/>
+		<migrationMatrix spec="beast.base.inference.parameter.RealParameter" id="rateMatrix" value="0.01" dimension="2" lower="0" upper="100"/>
 		<parameter name="frequencies" id="geo-frequencies" value=".5 .5" lower="0." upper="1." dimension="2"/>
 		<parameter name="R0" id="R0" lower="0" dimension="2" value="3"/>
 		<parameter name="becomeUninfectiousRate" id="becomeUninfectiousRate" value=".1" lower="0" dimension="2" />
 		<parameter name="samplingProportion" id="samplingProportion" value="0.05 0.15" lower="0" dimension="2"  upper="1."/>
 	</distribution>
 
-	<RPNcalculator spec="beast.math.statistic.RPNcalculator" id="birth" expression="R0 becomeUninfectiousRate *"> <!-- s/(d+s) -->
+	<RPNcalculator spec="beast.base.inference.util.RPNcalculator" id="birth" expression="R0 becomeUninfectiousRate *"> <!-- s/(d+s) -->
 		<parameter idref="becomeUninfectiousRate"/>
 		<parameter idref="R0"/>
 	</RPNcalculator>
-	<RPNcalculator spec="beast.math.statistic.RPNcalculator" id="sampling" expression="becomeUninfectiousRate samplingProportion *">
+	<RPNcalculator spec="beast.base.inference.util.RPNcalculator" id="sampling" expression="becomeUninfectiousRate samplingProportion *">
 		<parameter idref="becomeUninfectiousRate"/>
 		<parameter idref="samplingProportion"/>
 	</RPNcalculator>
-	<RPNcalculator spec="beast.math.statistic.RPNcalculator" id="death" expression="becomeUninfectiousRate 1 samplingProportion - *"> <!-- b*S0/(d+s) -->
+	<RPNcalculator spec="beast.base.inference.util.RPNcalculator" id="death" expression="becomeUninfectiousRate 1 samplingProportion - *"> <!-- b*S0/(d+s) -->
 		<parameter idref="becomeUninfectiousRate"/>
 		<parameter idref="samplingProportion"/>
 	</RPNcalculator>
@@ -233,7 +233,7 @@
 
 
 		<init spec="RandomTreeFromMaster" masterTree="@mastertree"  taxa="@input_alignment">
-			<tree spec="beast.evolution.tree.RandomTree" id="tree" taxa="@input_alignment">
+			<tree spec="beast.base.evolution.tree.coalescent.RandomTree" id="tree" taxa="@input_alignment">
 				<populationModel spec="ConstantPopulation">
 					<parameter name="popSize">5.0</parameter>
 				</populationModel>
@@ -250,8 +250,8 @@
 			<stateNode idref="geo-frequencies"/>
 		</state>
 
-		<distribution id="posterior" spec="util.CompoundDistribution">
-			<distribution id="prior" spec="util.CompoundDistribution">
+		<distribution id="posterior" spec="beast.base.inference.CompoundDistribution">
+			<distribution id="prior" spec="beast.base.inference.CompoundDistribution">
 				<distribution idref="treePrior"/>
 				<prior id="R0Prior" name="distribution" x="@R0">
 					<LogNormal name="distr" M="0." S="1.25"/>
@@ -294,7 +294,7 @@
 			<log idref="becomeUninfectiousRate"/>
 			<log idref="samplingProportion"/>
 			<log idref="rateMatrix"/>
-			<log id="TreeHeight" spec="beast.evolution.tree.TreeHeightLogger" tree="@tree"/>
+			<log id="TreeHeight" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@tree"/>
 			<log idref="mutationRate"/>
 			<log idref="geo-frequencies"/>
 			<log idref="birth"/>

@@ -3,9 +3,10 @@ package bdmm.loggers;
 import beast.base.core.BEASTObject;
 import beast.base.core.Input;
 import beast.base.core.Loggable;
-import beast.evolution.speciation.BirthDeathMigrationModelUncoloured;
 
 import java.io.PrintStream;
+
+import bdmm.evolution.speciation.BirthDeathMigrationModelUncoloured;
 
 public class RootProbLogger extends BEASTObject implements Loggable {
 

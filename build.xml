@@ -7,10 +7,11 @@
 
     <!-- Location to check for local copy of beast2 repository -->
     <property name="beastDir" location="../beast2"/>
+    <property name="libBeast2" location="${beastDir}/lib" />
 
-    <!-- BEAST 2 currently uses Java 1.8 -->
-    <property name="sourceVersion" value="1.8"/>
-    <property name="targetVersion" value="1.8"/>
+    <!-- BEAST 2 currently uses Java 17 -->
+    <property name="sourceVersion" value="17"/>
+    <property name="targetVersion" value="17"/>
 
     <!-- Directories necessary for all BEAST 2 packages -->
     <property name="doc" location="doc"/>
@@ -45,8 +46,8 @@
 
         <!-- Read package name and version from xml file -->
         <xmlproperty file="version.xml" prefix="fromVersionFile" />
-        <property name="projName" value="${fromVersionFile.addon(name)}" />
-        <property name="projVersion" value="${fromVersionFile.addon(version)}" />
+        <property name="projName" value="${fromVersionFile.package(name)}" />
+        <property name="projVersion" value="${fromVersionFile.package(version)}" />
 
         <mkdir dir="${build}"/>
         <mkdir dir="${build-lib}"/>
@@ -102,6 +103,11 @@
             <classpath>
                 <pathelement path="${classpath}"/>
                 <fileset dir="${beastDir}/lib" includes="*.jar"/>
+                <fileset dir="${libBeast2}/junit" includes="*.jar"/>
+                <pathelement path="../BeastFX/build"/>
+                <pathelement path="../sampled-ancestors/build"/>
+                <pathelement path="../MultiTypeTree2.7/build"/>
+
             </classpath>
         </javac>
         <jar jarfile="${build-lib}/beast2.jar" basedir="${build-beast}" />
@@ -117,6 +123,8 @@
     <target name="get-dependencies">
       <echo>Downloading dependencies...</echo>
 
+
+       <!--
       <echo>MultiTypeTree:</echo>
       <get src="https://github.com/tgvaughan/MultiTypeTree/releases/download/v7.0.1/MultiTypeTree.v7.0.1.zip"
            dest="${build-lib}/MultiTypeTree.zip"/>
@@ -126,6 +134,7 @@
         <fileset dir="${build-lib}/MultiTypeTree/lib" includes="*.jar"/>
       </move>
 
+
       <echo>MASTER:</echo>
       <get src="https://github.com/tgvaughan/MASTER/releases/download/v6.1.1/MASTER.package.v6.1.1.zip"
            dest="${build-lib}/MASTER.zip"/>
@@ -134,6 +143,8 @@
       <move todir="${build-lib}">
         <fileset dir="${build-lib}/MASTER/lib" includes="*.jar"/>
       </move>
+        
+
 
       <echo>SA:</echo>
       <get src="https://github.com/CompEvol/sampled-ancestors/releases/download/v2.0.2/SA.v2.0.2.zip"
@@ -143,6 +154,7 @@
       <move todir="${build-lib}">
         <fileset dir="${build-lib}/SA/lib" includes="*.jar"/>
       </move>
+    -->
 
     </target>
 
@@ -152,6 +164,11 @@
             <classpath>
                 <pathelement path="${classpath}"/>
                 <fileset dir="${build-lib}" includes="*.jar"/>
+                <fileset dir="${libBeast2}" includes="*.jar"/>
+                <fileset dir="${libBeast2}/junit" includes="*.jar"/>
+                <pathelement path="../BeastFX/build"/>
+                <pathelement path="../sampled-ancestors/build"/>
+                <pathelement path="../MultiTypeTree2.7/build"/>
             </classpath>
         </javac>
     </target>
@@ -176,6 +193,11 @@
                 <pathelement path="${build}" />
                 <fileset dir="${build-lib}" includes="*.jar"/>
                 <fileset dir="${lib}" includes="*.jar"/>
+                <fileset dir="${libBeast2}" includes="*.jar"/>
+                <fileset dir="${libBeast2}/junit" includes="*.jar"/>
+                <pathelement path="../BeastFX/build"/>
+                <pathelement path="../sampled-ancestors/build"/>
+                <pathelement path="../MultiTypeTree2.7/build"/>
             </classpath>
             <batchtest fork="yes" todir="${test-reports}">
                 <fileset dir="${build}">
