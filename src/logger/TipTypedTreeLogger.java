@@ -1,12 +1,12 @@
 package logger;
 
-import beast.core.BEASTObject;
-import beast.core.Input;
-import beast.core.Loggable;
+import beast.base.core.BEASTObject;
+import beast.base.core.Input;
+import beast.base.core.Loggable;
 
 import beast.evolution.speciation.BirthDeathMigrationModelUncoloured;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
 
 import java.io.PrintStream;
 

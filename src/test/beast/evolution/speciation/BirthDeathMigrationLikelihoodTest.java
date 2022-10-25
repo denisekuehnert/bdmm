@@ -1,19 +1,17 @@
 package test.beast.evolution.speciation;
 
-import beast.core.parameter.BooleanParameter;
-import beast.core.parameter.RealParameter;
+import beast.base.inference.parameter.BooleanParameter;
+import beast.base.inference.parameter.RealParameter;
 import beast.evolution.tree.*;
-import beast.util.TreeParser;
-import junit.framework.TestCase;
+import beast.base.evolution.tree.TreeParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
 
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
+import beast.base.evolution.alignment.Taxon;
+import beast.base.evolution.alignment.TaxonSet;
 import beast.evolution.speciation.BirthDeathMigrationModel;
 import beast.evolution.speciation.BirthDeathMigrationModelUncoloured;
 import beast.evolution.speciation.PiecewiseBirthDeathMigrationDistribution;

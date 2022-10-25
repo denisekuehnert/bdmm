@@ -1,15 +1,15 @@
 package beast.app.seqgen;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.branchratemodel.BranchRateModel;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.util.Randomizer;
-import beast.util.XMLProducer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.branchratemodel.BranchRateModel;
+import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.util.Randomizer;
+import beast.base.parser.XMLProducer;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;

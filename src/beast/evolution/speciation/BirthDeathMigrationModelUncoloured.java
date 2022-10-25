@@ -1,13 +1,18 @@
 package beast.evolution.speciation;
 
-import beast.core.Loggable;
-import beast.core.parameter.IntegerParameter;
+import beast.base.core.Loggable;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.TraitSet;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.TreeInterface;
+import beast.base.inference.parameter.IntegerParameter;
 import beast.evolution.tree.*;
-import beast.core.Input;
-import beast.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Description;
 import beast.core.util.Utils;
 
 import beast.math.*;
+import multitypetree.evolution.tree.MultiTypeNode;
 
 import java.io.PrintStream;
 import java.util.concurrent.*;
@@ -203,7 +208,6 @@ public class BirthDeathMigrationModelUncoloured extends PiecewiseBirthDeathMigra
 		if (print) System.out.println("\nlogP = " + logP);
 
 		if (Double.isInfinite(logP)) logP = Double.NEGATIVE_INFINITY;
-
 		if (SAModel && !(removalProbability.get().getDimension()==n && removalProbability.get().getValue()==1.)) {
 			int internalNodeCount = tree.getLeafNodeCount() - ((Tree)tree).getDirectAncestorNodeCount()- 1;
 			logP +=  Math.log(2)*internalNodeCount;

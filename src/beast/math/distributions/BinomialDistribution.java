@@ -1,8 +1,9 @@
 package beast.math.distributions;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.distribution.ParametricDistribution;
+import beast.base.inference.parameter.RealParameter;
 import org.apache.commons.math.distribution.BinomialDistributionImpl;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 

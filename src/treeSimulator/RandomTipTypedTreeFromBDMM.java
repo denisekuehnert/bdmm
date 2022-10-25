@@ -1,12 +1,12 @@
 package treeSimulator;
 
-import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import org.jblas.util.Random;
+import beast.base.core.Input;
+import beast.base.inference.StateNode;
+import beast.base.inference.StateNodeInitialiser;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.util.Randomizer;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
 
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class RandomTipTypedTreeFromBDMM extends Tree implements StateNodeInitial
         if(numberOfLeavesInput.get() != null) {
             leavesInTree = numberOfLeavesInput.get();
         } else {
-            leavesInTree = 4 + Random.nextInt(maxTreeSize - 4); // draw random number of leaves
+            leavesInTree = 4 + Randomizer.nextInt(maxTreeSize - 4); // draw random number of leaves
         }
 
         // this construction in the next few lines is not very clean, but I leave it for now

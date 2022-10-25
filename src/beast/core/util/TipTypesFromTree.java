@@ -1,10 +1,10 @@
 package beast.core.util;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.TraitSet;
-import beast.evolution.tree.Tree;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.TraitSet;
+import beast.base.evolution.tree.Tree;
 
 @Description("Acquire trait set values from tree leaf metadata.")
 public class TipTypesFromTree extends TraitSet {

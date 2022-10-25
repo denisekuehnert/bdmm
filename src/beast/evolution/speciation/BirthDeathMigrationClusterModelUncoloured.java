@@ -1,13 +1,13 @@
 package beast.evolution.speciation;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.core.util.Log;
-import beast.evolution.tree.TreeInterface;
-import beast.math.distributions.ParametricDistribution;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.core.Log;
+import beast.base.evolution.tree.TreeInterface;
+import beast.base.inference.distribution.ParametricDistribution;
+import beast.base.util.Randomizer;
 import org.apache.commons.math.MathException;
 
 import java.util.Arrays;

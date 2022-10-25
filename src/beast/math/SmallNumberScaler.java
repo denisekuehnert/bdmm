@@ -1,6 +1,6 @@
 package beast.math;
 
-import beast.core.Description;
+import beast.base.core.Description;
 
 /**
  * Created by Jeremie Scire (jscire) on 24.06.16.

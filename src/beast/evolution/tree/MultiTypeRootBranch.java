@@ -1,9 +1,9 @@
 package beast.evolution.tree;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.parameter.RealParameter;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.StateNode;
+import beast.base.inference.parameter.RealParameter;
 import org.w3c.dom.Node;
 
 import java.io.PrintStream;
@@ -227,15 +227,17 @@ public class MultiTypeRootBranch extends StateNode {
         out.print(getID() + "\t");
     }
 
-    @Override
-    public void log(int nSample, PrintStream out) {
-        out.print(getChangeCount()  + "\t"); // just log number of type changes
-//        out.print(toString()  + "\t");    // this would be ideal to store in an extra log file to report details of type changes
-    }
 
     @Override
     public void close(PrintStream out) {
         // nothing to do
     }
+
+	@Override
+	public void log(long sample, PrintStream out) {
+		  out.print(getChangeCount()  + "\t"); // just log number of type changes
+//        out.print(toString()  + "\t");    // this would be ideal to store in an extra log file to report details of type changes
+		
+	}
 
 }

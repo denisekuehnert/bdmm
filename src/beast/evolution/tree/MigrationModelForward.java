@@ -16,8 +16,9 @@
  */
 package beast.evolution.tree;
 
-import beast.core.Description;
-import beast.core.Input;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import multitypetree.evolution.tree.SCMigrationModel;
 
 /**
  * @author Tim Vaughan, edited by Denise Kuehnert for use in bdmm

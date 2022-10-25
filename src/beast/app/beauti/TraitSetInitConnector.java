@@ -16,12 +16,13 @@
  */
 package beast.app.beauti;
 
-import beast.core.BEASTInterface;
-import beast.core.parameter.Parameter;
-import beast.core.parameter.RealParameter;
-import beast.evolution.likelihood.TreeLikelihood;
-import beast.evolution.tree.TraitSet;
-import beast.evolution.tree.Tree;
+import beast.base.core.BEASTInterface;
+import beast.base.inference.parameter.Parameter;
+import beast.base.inference.parameter.RealParameter;
+import beastfx.app.inputeditor.BeautiDoc;
+import beast.base.evolution.likelihood.TreeLikelihood;
+import beast.base.evolution.tree.TraitSet;
+import beast.base.evolution.tree.Tree;
 import multitypetree.distributions.ExcludablePrior;
 
 import java.util.List;

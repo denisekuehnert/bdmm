@@ -2,7 +2,7 @@ package beast.math;
 
 import java.text.DecimalFormat;
 
-import beast.core.Description;
+import beast.base.core.Description;
 
 /**
  * Created by Jeremie Scire (jscire) on 24.06.16.

@@ -1,14 +1,14 @@
 package treeSimulator;
 
-import beast.evolution.tree.MultiTypeNode;
-import beast.evolution.tree.MultiTypeTree;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import org.jblas.util.Random;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.util.Randomizer;
+import multitypetree.evolution.tree.MultiTypeNode;
+import multitypetree.evolution.tree.MultiTypeTree;
 
 import java.util.ArrayList;
 
-import static beast.math.Binomial.choose2;
+import static beast.base.util.Binomial.choose2;
 
 public class PopHistorySimulator {
 
@@ -191,8 +191,8 @@ public class PopHistorySimulator {
 
                     if (coalescence) {
                         // draw coalescing lineages randomly
-                        int firstLineage = Random.nextInt(availableNodes.size());
-                        int secondLineage = Random.nextInt(availableNodes.size() - 1);
+                        int firstLineage = Randomizer.nextInt(availableNodes.size());
+                        int secondLineage = Randomizer.nextInt(availableNodes.size() - 1);
                         if (secondLineage == firstLineage) secondLineage = availableNodes.size() - 1; // mimick sampling without replacement
 
                         availableNodes = coalesceLineages(availableNodes, firstLineage, secondLineage, internalNodeID, heightOffset - eventHeight);
@@ -260,7 +260,7 @@ public class PopHistorySimulator {
                             simulatedPopHistory.popSizesThroughTime.get(currentEventIndex + 1)[currentEvent.demeAffected]);
                     if (saEvent) { // sampled ancestor
                         // draw descendant lineage
-                        int uniqueDescendant = Random.nextInt(availableLineagesForThisDeme);
+                        int uniqueDescendant = Randomizer.nextInt(availableLineagesForThisDeme);
                         availableNodesPerType.set(currentEvent.demeAffected,
                                 buildSampledAncestor(availableNodesPerType.get(currentEvent.demeAffected), uniqueDescendant, internalNodeID, leafID,
                                         heightOffset - eventHeight, currentEvent.demeAffected));
@@ -289,8 +289,8 @@ public class PopHistorySimulator {
 
                     if (coalescence) {
                         // draw coalescing lineages randomly
-                        int firstLineage = Random.nextInt(availableLineagesForThisDeme);
-                        int secondLineage = Random.nextInt(availableLineagesForThisDeme - 1);
+                        int firstLineage = Randomizer.nextInt(availableLineagesForThisDeme);
+                        int secondLineage = Randomizer.nextInt(availableLineagesForThisDeme - 1);
                         if (secondLineage == firstLineage) secondLineage = availableLineagesForThisDeme - 1; // mimick sampling without replacement
 
                         availableNodesPerType.set(currentEvent.demeAffected, coalesceLineages(availableNodesPerType.get(currentEvent.demeAffected),
@@ -386,7 +386,7 @@ public class PopHistorySimulator {
                             simulatedPopHistory.popSizesThroughTime.get(currentEventIndex + 1)[currentEvent.demeAffected]);
                     if (saEvent) { // sampled ancestor
                         // draw descendant lineage
-                        int uniqueDescendant = Random.nextInt(availableLineagesForThisDeme);
+                        int uniqueDescendant = Randomizer.nextInt(availableLineagesForThisDeme);
                         availableNodesPerType.set(currentEvent.demeAffected,
                                 buildSampledAncestor(availableNodesPerType.get(currentEvent.demeAffected), uniqueDescendant, internalNodeID, leafID,
                                         heightOffset - eventHeight, currentEvent.demeAffected, isUntypedTree));
@@ -424,8 +424,8 @@ public class PopHistorySimulator {
 
                     if (coalescence) {
                         // draw coalescing lineages randomly
-                        int firstLineage = Random.nextInt(availableLineagesForThisDeme);
-                        int secondLineage = Random.nextInt(availableLineagesForThisDeme - 1);
+                        int firstLineage = Randomizer.nextInt(availableLineagesForThisDeme);
+                        int secondLineage = Randomizer.nextInt(availableLineagesForThisDeme - 1);
                         if (secondLineage == firstLineage) secondLineage = availableLineagesForThisDeme - 1; // mimick sampling without replacement
 
                         availableNodesPerType.set(currentEvent.demeAffected, coalesceLineages(availableNodesPerType.get(currentEvent.demeAffected),
@@ -602,7 +602,7 @@ public class PopHistorySimulator {
     }
 
     public void migrateLineage(ArrayList<MultiTypeNode> targetDeme, ArrayList<MultiTypeNode> originDeme, int originDemeInd ,double timeOfMigration) {
-        int migratingLineage = Random.nextInt(targetDeme.size()); // we are reconstructing the tree backward in time, so we start from the affected (target) deme to the deme of origin
+        int migratingLineage = Randomizer.nextInt(targetDeme.size()); // we are reconstructing the tree backward in time, so we start from the affected (target) deme to the deme of origin
 
         MultiTypeNode migratingNode = targetDeme.remove(migratingLineage);
         migratingNode.addChange(originDemeInd, timeOfMigration);
@@ -611,7 +611,7 @@ public class PopHistorySimulator {
     }
 
     public void migrateLineage(ArrayList<Node> targetDeme, ArrayList<Node> originDeme, int originDemeInd) {
-        int migratingLineage = Random.nextInt(targetDeme.size()); // we are reconstructing the tree backward in time, so we start from the affected (target) deme to the deme of origin
+        int migratingLineage = Randomizer.nextInt(targetDeme.size()); // we are reconstructing the tree backward in time, so we start from the affected (target) deme to the deme of origin
         Node migratingNode = targetDeme.remove(migratingLineage);
         originDeme.add(migratingNode);
     }

@@ -1,6 +1,10 @@
 package beast.evolution.tree;
 
-import beast.core.*;
+import beast.base.core.Description;
+import beast.base.core.Function;
+import beast.base.core.Input;
+import beast.base.core.Loggable;
+import beast.base.inference.CalculationNode;
 
 import java.io.PrintStream;
 
@@ -32,10 +36,6 @@ public class OriginTypeChangeLogger extends CalculationNode implements Loggable,
             out.print(multiTypeRootBranch.getID() + "\t");
     }
 
-    @Override
-    public void log(int nSample, PrintStream out) {
-        out.print(multiTypeRootBranch.toString());
-    }
 
     @Override
     public void close(PrintStream out) {
@@ -56,5 +56,10 @@ public class OriginTypeChangeLogger extends CalculationNode implements Loggable,
     public double getArrayValue(int iDim) {
         return multiTypeRootBranch.getChangeCount();
     }
+
+	@Override
+	public void log(long sample, PrintStream out) {
+		out.print(multiTypeRootBranch.toString());
+	}
 }
 

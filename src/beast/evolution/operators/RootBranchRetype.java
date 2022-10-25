@@ -1,12 +1,12 @@
 package beast.evolution.operators;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.MultiTypeNode;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.parameter.RealParameter;
+import multitypetree.evolution.tree.MultiTypeNode;
 import beast.evolution.tree.MultiTypeRootBranch;
-import beast.evolution.tree.Node;
-import beast.util.Randomizer;
+import beast.base.evolution.tree.Node;
+import beast.base.util.Randomizer;
 import multitypetree.operators.RandomRetypeOperator;
 
 import java.util.ArrayList;
@@ -54,6 +54,7 @@ public class RootBranchRetype extends RandomRetypeOperator {
         // Set new root type
         ((MultiTypeNode) rootNode).setNodeType(newType);
 
+        
         //  Retype attached branches:
         logHR -= retypeBranch(rootBranch);
 

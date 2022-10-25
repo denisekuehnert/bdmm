@@ -1,11 +1,16 @@
 package beast.evolution.speciation;
 
-import beast.core.Description;
+import beast.base.core.Description;
 import beast.core.util.Utils;
 import beast.evolution.tree.*;
-import beast.core.Input;
-
+import beast.base.core.Input;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.TreeInterface;
+import beast.base.inference.util.InputUtil;
 import beast.math.*;
+import multitypetree.evolution.tree.MultiTypeNode;
+import multitypetree.evolution.tree.MultiTypeTree;
 
 import java.util.concurrent.*;
 
@@ -26,7 +31,7 @@ public class BirthDeathMigrationModel extends PiecewiseBirthDeathMigrationDistri
 			new Input<>("originBranch", "MultiTypeRootBranch for origin coloring");
 
 	MultiTypeRootBranch originBranch;
-
+	MultiTypeNode x;
 	Boolean print = false;
 
 	@Override
@@ -78,10 +83,10 @@ public class BirthDeathMigrationModel extends PiecewiseBirthDeathMigrationDistri
 	@Override
 	public double calculateTreeLogLikelihood(TreeInterface tree) {
 
-		if (SAModel && treeInput.isDirty()) throw new RuntimeException("Error: SA Model only implemented for fixed trees!");
+		if (SAModel && InputUtil.isDirty(treeInput)) throw new RuntimeException("Error: SA Model only implemented for fixed trees!");
 
 		MultiTypeNode root = (MultiTypeNode) tree.getRoot();
-
+		
 		if (!((MultiTypeTree) tree).isValid() || (origin.get()!=null && !originBranchIsValid(root, birthAmongDemes))){
 			logP =  Double.NEGATIVE_INFINITY;
 			return logP;

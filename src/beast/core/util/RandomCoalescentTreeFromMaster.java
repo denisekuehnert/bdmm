@@ -1,14 +1,16 @@
 package beast.core.util;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
-import beast.core.parameter.IntegerParameter;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.StateNode;
+import beast.base.inference.StateNodeInitialiser;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.TraitSet;
+import beast.base.evolution.tree.coalescent.RandomTree;
 import beast.evolution.tree.*;
-import master.BeastTreeFromMaster;
 
 import java.util.ArrayList;
 import java.util.List;
