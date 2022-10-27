@@ -17,7 +17,7 @@
     <property name="doc" location="doc"/>
     <property name="examples" location="examples"/>
     <property name="scripts" location="scripts"/>
-    <property name="templates" location="templates"/>
+    <property name="templates" location="fxtemplates"/>
 
     <!-- BEAST branch and version to build against
          (only different for version tags because of
@@ -219,7 +219,7 @@
         <mkdir dir="${pack}"/>
         <mkdir dir="${pack}/examples"/>
         <mkdir dir="${pack}/scripts"/>
-        <mkdir dir="${pack}/templates"/>
+        <mkdir dir="${pack}/fxtemplates"/>
         <mkdir dir="${pack}/lib"/>
         <mkdir dir="${pack}/doc"/>
 
@@ -251,7 +251,7 @@
 
 
         <mkdir dir="${templates}" />
-        <copy todir="${pack}/templates">
+        <copy todir="${pack}/fxtemplates">
             <fileset dir="${templates}" includes="*.xml" />
         </copy>
 

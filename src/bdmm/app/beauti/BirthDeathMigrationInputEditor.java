@@ -1,13 +1,58 @@
 package bdmm.app.beauti;
 
-import beast.base.core.BEASTInterface;
-import beast.base.core.Input;
-import beastfx.app.inputeditor.BeautiDoc;
+import beastfx.app.inputeditor.InputEditor;
+import beastfx.app.util.FXUtils;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingNode;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
 
 
 import java.util.ArrayList;
 
 import bdmm.evolution.speciation.BirthDeathMigrationModel;
+import beast.base.core.BEASTInterface;
+import beast.base.core.Input;
+import beast.base.core.Log;
+import beastfx.app.inputeditor.BeautiDoc;
 
 /**
  * Created by Denise on 04.07.16.
@@ -15,12 +60,22 @@ import bdmm.evolution.speciation.BirthDeathMigrationModel;
 public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 
     DefaultTableModel R0Model, deltaModel, samplingModel, samplingTimesModel, rateMatrixModel;
+    HBox r0Box;
+    List<TextField> r0ModelVals;
+    
+    
+    Spinner<Integer> dimSpinner;
+    
     SpinnerNumberModel nTypesModel;
     BirthDeathMigrationModel bdmm;
+    
+    
+    final double DEFAULT_R0 = 2;
 
-    JCheckBox R0EstCheckBox, deltaEstCheckBox, samplingEstCheckBox, rateMatrixEstCheckBox;
+    CheckBox R0EstCheckBox, deltaEstCheckBox, samplingEstCheckBox, rateMatrixEstCheckBox;
 
     boolean dimChangeInProgress = false;
+    boolean loadingInProgress = false;
 
     public BirthDeathMigrationInputEditor(BeautiDoc doc) {
         super(doc);
@@ -30,11 +85,116 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     public Class<?> type() {
         return BirthDeathMigrationModel.class;
     }
+    
+    
+
+
 
     @Override
     public void init(Input<?> input, BEASTInterface beastObject, int itemNr,
         ExpandOption bExpandOption, boolean bAddButtons) {
 
+    	
+    	m_input = input;
+    	m_beastObject = beastObject;
+		this.itemNr = itemNr;
+		pane = FXUtils.newVBox();
+		this.bdmm = (BirthDeathMigrationModel) ((ArrayList) input.get()).get(0);
+		
+	
+		
+		VBox box = FXUtils.newVBox();
+
+		
+		// Number of demes
+		HBox nrOfDemesBox = new HBox();
+		Label nrOfDemesLabel = new Label("Number of demes:");
+		nrOfDemesBox.getChildren().add(nrOfDemesLabel);
+        dimSpinner = new Spinner<>(2, 100, 2);
+        dimSpinner.setEditable(true);
+       
+        nrOfDemesBox.getChildren().add(dimSpinner);
+        box.getChildren().add(nrOfDemesBox);
+        
+        
+        int ndim = dimSpinner.getValue();
+        
+       
+        // Reproduction number
+        r0Box = new HBox();
+        Label r0Label = new Label("Reproduction number per type:");
+        r0Label.setTooltip(new Tooltip(bdmm.R0.getTipText()));
+        r0Box.getChildren().add(r0Label);
+        
+        // R0 textfields
+        r0ModelVals = new ArrayList<>();
+        this.setVectorDimension(r0Box, r0ModelVals, r0ModelVals.size(), ndim, DEFAULT_R0, bdmm.R0.getTipText());
+        
+        
+        // R0 estimate checkbox
+        R0EstCheckBox = new CheckBox("estimate");
+        R0EstCheckBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+        R0EstCheckBox.setTooltip(new Tooltip("Esitmate R0"));
+        HBox r0BoxEst = new HBox();
+        r0BoxEst.getChildren().add(R0EstCheckBox);
+        box.getChildren().add(r0Box);
+        box.getChildren().add(r0BoxEst);
+        
+        pane.getChildren().add(box);
+        getChildren().add(pane);
+        
+        loadFromBDMM();
+        
+        
+        /**
+         * Action listeners
+         */
+        
+        // Dimension spinner
+        dimSpinner.valueProperty().addListener((observable, oldDim, newDim) -> {
+        	
+        	 if (loadingInProgress || dimChangeInProgress) return;
+             //int oldDim = bdmm.stateNumber.get();
+
+             dimChangeInProgress = true;
+
+             System.out.println("Dimension change starting from " + oldDim + " to " + newDim);
+
+             //int samplingIntervals = samplingModel.getColumnCount()/oldDim;
+
+             //R0Model.setColumnCount(R0Model.getColumnCount()/oldDim*newDim);
+             
+             setVectorDimension(r0Box, r0ModelVals, oldDim, newDim, DEFAULT_R0, bdmm.R0.getTipText());
+             bdmm.R0.get().setDimension(r0ModelVals.size());
+        	
+             System.out.println("Dimension change finishing.");
+
+             bdmm.setInputValue("stateNumber", newDim);
+             dimChangeInProgress = false;
+             //saveToBDMM();
+        	
+        });
+
+
+        
+        // Checkboxes
+        R0EstCheckBox.setOnAction(e -> {
+        	saveToBDMM();
+        });
+    	
+    	/*
+    	
+    	
+    	
+    	if (this.pane != null) {
+    		// get here when refreshing
+    		pane.getChildren().clear();
+    	} else {    	
+    		this.pane = FXUtils.newHBox();
+    		getChildren().add(pane);
+    	}
+    	
+    	
         // Set up fields
         m_bAddButtons = bAddButtons;
         m_input = input;
@@ -103,7 +263,6 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         panel.add(R0Table, c);
         R0EstCheckBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
         c.gridx = 2;
-        c.gridy = 1;
         c.anchor = GridBagConstraints.LINE_END;
         c.weightx = 1.0;
         panel.add(R0EstCheckBox, c);
@@ -219,7 +378,13 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         c.weightx = 1.0;
         panel.add(rateMatrixEstCheckBox, c);
 
-        add(panel);
+       
+        
+        //add(panel);
+        
+        SwingNode n = new SwingNode();
+        n.setContent(panel);
+        this.pane.getChildren().add(n);
 
 
         // Event handlers
@@ -348,9 +513,106 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         rateMatrixEstCheckBox.addItemListener((ItemEvent e) -> {
             saveToBDMM();
         });
+        
+        */
+    }
+    
+    
+    
+    
+    /**
+     * Resize a vector
+     * @param hbox
+     * @param vector
+     * @param newDim
+     * @param defaultVal
+     * @param tipText
+     */
+    private void setVectorDimension(HBox hbox, List<TextField> vector, int oldDim, int newDim, double defaultVal, String tipText) {
+    	oldDim = Math.min(oldDim, vector.size());
+    	
+    	if (oldDim == newDim) return;
+    	
+    	if (oldDim < newDim) {
+    		for (int i = oldDim; i < newDim; i++) {
+    			TextField tf = createTextField(hbox, defaultVal, tipText);
+    			vector.add(tf);
+       	 	}
+        }else {
+        	for (int i = oldDim-1; i >= newDim; i--) {
+        		TextField tf = vector.get(i);
+        		hbox.getChildren().remove(tf);
+        		vector.remove(i);
+			}
+        }
+    }
+    
+    
+    /**
+     * Create a textfield
+     * @param hbox
+     * @param val
+     * @param toopTip
+     * @return
+     */
+    private TextField createTextField(HBox hbox, double val, String toopTip) {
+    	
+    	
+    	TextField tf = new TextField();
+    	tf.setText("" + val);
+    	tf.setTooltip(new Tooltip(toopTip));
+    	
+    	tf.textProperty().addListener((observable, oldValue, newValue) -> {
+    		if (oldValue != newValue) {
+    			System.out.println("textfield changed from " + oldValue + " to " + newValue);
+    			saveToBDMM();
+    		}
+    	});
+
+    	
+    	hbox.getChildren().add(tf);
+    	return tf;
     }
 
+    
+    /**
+     * Load from bdmm into this class
+     */
     public void loadFromBDMM() {
+    	
+    	
+    	if (dimChangeInProgress || loadingInProgress) return;
+    	
+    	loadingInProgress = true;
+    	
+    	
+    	int ndim = bdmm.stateNumber.get();
+    	
+    	dimSpinner.getValueFactory().setValue(ndim);
+    	R0EstCheckBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+    	
+    	
+    	// Resize the vectors
+    	this.setVectorDimension(r0Box, r0ModelVals, bdmm.R0.get().getDimension(), bdmm.R0.get().getDimension(), DEFAULT_R0, bdmm.R0.getTipText());
+    	
+    	
+    	
+    	// Load their values into javafx
+    	for (int i = 0; i < bdmm.R0.get().getDimension(); i++) {
+    		TextField tf = r0ModelVals.get(i);
+    		double val = bdmm.R0.get().getArrayValue(i);
+    		tf.setText("" + val);
+    		
+    		System.out.println("setting " + i + " to " + val);
+    		
+    	}
+    	
+    	
+    	System.out.println("loadFromBDMM " + ndim + " -> " + bdmm.R0.get().getDimension() + " " + bdmm.R0.get().toXML());
+    	
+    	loadingInProgress = false;
+    	
+    	/*
         nTypesModel.setValue(bdmm.stateNumber.get());
         R0Model.setRowCount(1);
         R0Model.setColumnCount(bdmm.R0.get().getDimension());
@@ -376,7 +638,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         for (int i=1; i<bdmm.samplingRateChangeTimesInput.get().getDimension(); i++) {
             samplingTimesModel.setValueAt(bdmm.samplingRateChangeTimesInput.get().getValue(i), 0, i-1);
         }
-
+sbR0
         for (int i=0; i<bdmm.stateNumber.get(); i++) {
             for (int j=0; j<bdmm.stateNumber.get(); j++) {
                 if (i == j)
@@ -389,9 +651,49 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         deltaEstCheckBox.setSelected(bdmm.becomeUninfectiousRate.get().isEstimatedInput.get());
         samplingEstCheckBox.setSelected(bdmm.samplingProportion.get().isEstimatedInput.get());
         rateMatrixEstCheckBox.setSelected(bdmm.migrationMatrix.get().isEstimatedInput.get());
+        
+        */
     }
 
     public void saveToBDMM() {
+    	
+    	
+    	if (dimChangeInProgress || loadingInProgress) return;
+    	loadingInProgress = true;
+    	
+    	Integer ndim = dimSpinner.getValue();
+    	bdmm.setInputValue("stateNumber", ndim);
+    	//bdmm.stateNumber.setValue(ndim, bdmm);
+    	
+    	System.out.println("saveToBDMM: " + R0EstCheckBox.isSelected());
+    	
+    	
+    	// Parse R0
+    	StringBuilder sbR0 = new StringBuilder();
+    	for (int i = 0; i < this.r0ModelVals.size(); i++) {
+    		String val = this.r0ModelVals.get(i).getText();
+    		try {
+    			double x = Double.parseDouble(val);
+    			sbR0.append("" + x);
+    		}catch(Exception e) {
+    			sbR0.append("" + this.DEFAULT_R0);
+    		}
+    		if (i < this.r0ModelVals.size()-1) sbR0.append(" ");
+    	}
+    	bdmm.R0.get().setDimension(this.r0ModelVals.size());
+        bdmm.R0.setValue(sbR0.toString(), bdmm.R0.get());
+        bdmm.R0.get().isEstimatedInput.setValue(R0EstCheckBox.isSelected(), bdmm.R0.get()); // Why does the prior not disappear??
+        System.out.println("r0 " + sbR0.toString() + " dim " + ndim + " , " + bdmm.R0.get().toXML());
+        
+        
+        loadingInProgress = false;
+    	refreshPanel();
+    	validateInput();
+    	sync();
+    	
+    	
+    	
+    	/*
         StringBuilder sbR0 = new StringBuilder();
         for (int i=0; i<R0Model.getColumnCount(); i++) {
             if (i>0)
@@ -498,5 +800,13 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         }
 
         refreshPanel();
+        Platform.runLater(() ->
+    		init(m_input, m_beastObject, itemNr, ExpandOption.TRUE, m_bAddButtons)
+		);
+		*/
+        
+        
+        
+        
     }
 }
