@@ -52,6 +52,7 @@ import bdmm.evolution.speciation.BirthDeathMigrationModel;
 import beast.base.core.BEASTInterface;
 import beast.base.core.Input;
 import beast.base.core.Log;
+import beast.base.inference.parameter.RealParameter;
 import beastfx.app.inputeditor.BeautiDoc;
 
 /**
@@ -59,9 +60,10 @@ import beastfx.app.inputeditor.BeautiDoc;
  */
 public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 
-    DefaultTableModel R0Model, deltaModel, samplingModel, samplingTimesModel, rateMatrixModel;
-    HBox r0Box;
-    List<TextField> r0ModelVals;
+	
+	CheckBox R0EstCheckBox, deltaEstCheckBox, samplingEstCheckBox, rateMatrixEstCheckBox;
+    HBox r0Box, deltaBox, samplingBox, rateMatrixBox;
+    List<TextField> r0ModelVals, deltaModelVals, samplingModelVals, rateMatrixModelVals;
     
     
     Spinner<Integer> dimSpinner;
@@ -71,8 +73,11 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     
     
     final double DEFAULT_R0 = 2;
+    final double DEFAULT_DELTA = 1;
+    final double DEFAULT_SAMPLING = 0.01;
+    final double DEFAULT_M = 0.1;
 
-    CheckBox R0EstCheckBox, deltaEstCheckBox, samplingEstCheckBox, rateMatrixEstCheckBox;
+    
 
     boolean dimChangeInProgress = false;
     boolean loadingInProgress = false;
@@ -91,8 +96,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 
 
     @Override
-    public void init(Input<?> input, BEASTInterface beastObject, int itemNr,
-        ExpandOption bExpandOption, boolean bAddButtons) {
+    public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 
     	
     	m_input = input;
@@ -120,25 +124,33 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         int ndim = dimSpinner.getValue();
         
        
-        // Reproduction number
+        // Init reproduction number
         r0Box = new HBox();
-        Label r0Label = new Label("Reproduction number per type:");
-        r0Label.setTooltip(new Tooltip(bdmm.R0.getTipText()));
-        r0Box.getChildren().add(r0Label);
-        
-        // R0 textfields
         r0ModelVals = new ArrayList<>();
-        this.setVectorDimension(r0Box, r0ModelVals, r0ModelVals.size(), ndim, DEFAULT_R0, bdmm.R0.getTipText());
-        
-        
-        // R0 estimate checkbox
         R0EstCheckBox = new CheckBox("estimate");
-        R0EstCheckBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
-        R0EstCheckBox.setTooltip(new Tooltip("Esitmate R0"));
-        HBox r0BoxEst = new HBox();
-        r0BoxEst.getChildren().add(R0EstCheckBox);
+        HBox r0BoxEst = this.initParameter(bdmm.R0.get(), "Reproduction number per type:", r0Box, r0ModelVals, R0EstCheckBox, bdmm.R0.getTipText(), ndim, DEFAULT_R0);
         box.getChildren().add(r0Box);
         box.getChildren().add(r0BoxEst);
+        
+        
+        // Init delta
+        deltaBox = new HBox();
+        deltaModelVals = new ArrayList<>();
+        deltaEstCheckBox = new CheckBox("estimate");
+        HBox deltaBoxEst = this.initParameter(bdmm.becomeUninfectiousRate.get(),"BecomeUninfectionRate per type:", deltaBox, deltaModelVals, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText(), ndim, DEFAULT_DELTA);
+        box.getChildren().add(deltaBox);
+        box.getChildren().add(deltaBoxEst);
+        
+        
+        // Init sampling proportion
+        samplingBox = new HBox();
+        samplingModelVals = new ArrayList<>();
+        samplingEstCheckBox = new CheckBox("estimate");
+        HBox samplingBoxEst = this.initParameter(bdmm.samplingProportion.get(), "SamplingProportion per type:", samplingBox, samplingModelVals, samplingEstCheckBox, bdmm.samplingProportion.getTipText(), ndim*2, DEFAULT_SAMPLING);
+        box.getChildren().add(samplingBox);
+        box.getChildren().add(samplingBoxEst);
+        
+        
         
         pane.getChildren().add(box);
         getChildren().add(pane);
@@ -160,28 +172,30 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 
              System.out.println("Dimension change starting from " + oldDim + " to " + newDim);
 
-             //int samplingIntervals = samplingModel.getColumnCount()/oldDim;
 
-             //R0Model.setColumnCount(R0Model.getColumnCount()/oldDim*newDim);
+             // Update R0
+             setVectorDimension(bdmm.R0.get(), r0Box, r0ModelVals, oldDim, newDim, DEFAULT_R0, bdmm.R0.getTipText());
+             this.saveParameter(bdmm.R0.get(), r0ModelVals, R0EstCheckBox.isSelected());
              
-             setVectorDimension(r0Box, r0ModelVals, oldDim, newDim, DEFAULT_R0, bdmm.R0.getTipText());
-             bdmm.R0.get().setDimension(r0ModelVals.size());
+             // Update delta
+             setVectorDimension(bdmm.becomeUninfectiousRate.get(), deltaBox, deltaModelVals, oldDim, newDim, DEFAULT_DELTA, bdmm.becomeUninfectiousRate.getTipText());
+             this.saveParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaEstCheckBox.isSelected());
+
+             // Update sampling proportion
+             setVectorDimension(bdmm.samplingProportion.get(),samplingBox, samplingModelVals, oldDim*2, newDim*2, DEFAULT_SAMPLING, bdmm.samplingProportion.getTipText());
+             this.saveParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingEstCheckBox.isSelected());
+
         	
              System.out.println("Dimension change finishing.");
 
              bdmm.setInputValue("stateNumber", newDim);
              dimChangeInProgress = false;
-             //saveToBDMM();
         	
         });
 
 
         
-        // Checkboxes
-        R0EstCheckBox.setOnAction(e -> {
-        	saveToBDMM();
-        });
-    	
+ 
     	/*
     	
     	
@@ -519,6 +533,91 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     
     
     
+    /**
+     * Add a parameter to the gui and return its estimate checkbox hbox
+     * @param name
+     * @param hbox
+     * @param vector
+     * @param checkBox
+     * @param tooltip
+     * @return
+     */
+    private HBox initParameter(RealParameter param, String name, HBox hbox, List<TextField> vector, CheckBox checkBox, String tooltip, int ndim, double defaultVal) {
+    	
+        
+    	// Label
+        Label label = new Label(name);
+        label.setTooltip(new Tooltip(tooltip));
+        hbox.getChildren().add(label);
+        
+        // Add textfields
+        this.setVectorDimension(param, hbox, vector, vector.size(), ndim, defaultVal, tooltip);
+        
+        // Add estimate checkbox
+        checkBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+        checkBox.setTooltip(new Tooltip("Estimate value of this parameter in the MCMC chain"));
+        HBox r0BoxEst = new HBox();
+        r0BoxEst.getChildren().add(checkBox);
+        
+        
+        // Checkbox event listener
+        checkBox.setOnAction(e -> {
+        	saveToBDMM();
+        });
+    	
+        
+        return r0BoxEst;
+    	
+    }
+    
+    
+    /**
+     * Saves a parameter from the gui to bdmm
+     * @param param
+     * @param vector
+     */
+    private void saveParameter(RealParameter param, List<TextField> vector, boolean selected) {
+    	
+    	param.setDimension(vector.size());
+    	param.isEstimatedInput.setValue(selected, param);
+    	for (int i = 0; i < vector.size(); i++) {
+    		String val = vector.get(i).getText();
+    		double x;
+    		try {
+    			x = Double.parseDouble(val);
+    			param.setValue(i, x);
+    		}catch(Exception e) {
+    			
+    		}
+    	}
+    	
+    }
+    
+    
+    /**
+     * Loads a parameter from the bdmm to the gui
+     * @param param
+     * @param vector
+     */
+    private void loadParameter(RealParameter param, List<TextField> vector, HBox hbox, CheckBox checkBox, double defaultVal, String tipText) {
+    	
+    	
+    	// Estimate?
+    	checkBox.setSelected(param.isEstimatedInput.get());
+    	
+    	// Resize the vectors
+    	this.setVectorDimension(param, hbox, vector, param.getDimension(), param.getDimension(), defaultVal, tipText);
+    	
+    	// Load their values into javafx
+    	for (int i = 0; i < param.getDimension(); i++) {
+    		TextField tf = vector.get(i);
+    		double val = param.getArrayValue(i);
+    		tf.setText("" + val);
+    	}
+    	
+    }
+    
+    
     
     /**
      * Resize a vector
@@ -528,14 +627,14 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param defaultVal
      * @param tipText
      */
-    private void setVectorDimension(HBox hbox, List<TextField> vector, int oldDim, int newDim, double defaultVal, String tipText) {
+    private void setVectorDimension(RealParameter param, HBox hbox, List<TextField> vector, int oldDim, int newDim, double defaultVal, String tipText) {
     	oldDim = Math.min(oldDim, vector.size());
     	
     	if (oldDim == newDim) return;
     	
     	if (oldDim < newDim) {
     		for (int i = oldDim; i < newDim; i++) {
-    			TextField tf = createTextField(hbox, defaultVal, tipText);
+    			TextField tf = createTextField(param, i, hbox, defaultVal, tipText);
     			vector.add(tf);
        	 	}
         }else {
@@ -555,17 +654,25 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param toopTip
      * @return
      */
-    private TextField createTextField(HBox hbox, double val, String toopTip) {
+    private TextField createTextField(RealParameter param, int index, HBox hbox, double val, String toopTip) {
     	
     	
     	TextField tf = new TextField();
     	tf.setText("" + val);
     	tf.setTooltip(new Tooltip(toopTip));
+    	tf.setPrefWidth(70);
+    	
     	
     	tf.textProperty().addListener((observable, oldValue, newValue) -> {
-    		if (oldValue != newValue) {
-    			System.out.println("textfield changed from " + oldValue + " to " + newValue);
-    			saveToBDMM();
+    		if (!oldValue.equals(newValue)) {
+    			//System.out.println("textfield changed from " + oldValue + " to " + newValue);
+    			try {
+        			double x = Double.parseDouble(newValue);
+        			param.setValue(index, x);
+        		}catch(Exception e) {
+        			
+        		}
+    			//saveToBDMM();
     		}
     	});
 
@@ -589,26 +696,12 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     	int ndim = bdmm.stateNumber.get();
     	
     	dimSpinner.getValueFactory().setValue(ndim);
-    	R0EstCheckBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+    
+    	this.loadParameter(bdmm.R0.get(), r0ModelVals, r0Box, R0EstCheckBox, this.DEFAULT_R0, bdmm.R0.getTipText());
+    	this.loadParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaBox, deltaEstCheckBox, this.DEFAULT_DELTA, bdmm.becomeUninfectiousRate.getTipText());
+    	this.loadParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingBox, samplingEstCheckBox, this.DEFAULT_SAMPLING, bdmm.samplingProportion.getTipText());
     	
     	
-    	// Resize the vectors
-    	this.setVectorDimension(r0Box, r0ModelVals, bdmm.R0.get().getDimension(), bdmm.R0.get().getDimension(), DEFAULT_R0, bdmm.R0.getTipText());
-    	
-    	
-    	
-    	// Load their values into javafx
-    	for (int i = 0; i < bdmm.R0.get().getDimension(); i++) {
-    		TextField tf = r0ModelVals.get(i);
-    		double val = bdmm.R0.get().getArrayValue(i);
-    		tf.setText("" + val);
-    		
-    		System.out.println("setting " + i + " to " + val);
-    		
-    	}
-    	
-    	
-    	System.out.println("loadFromBDMM " + ndim + " -> " + bdmm.R0.get().getDimension() + " " + bdmm.R0.get().toXML());
     	
     	loadingInProgress = false;
     	
@@ -661,30 +754,17 @@ sbR0
     	if (dimChangeInProgress || loadingInProgress) return;
     	loadingInProgress = true;
     	
+    	
+    	// Dimension
     	Integer ndim = dimSpinner.getValue();
     	bdmm.setInputValue("stateNumber", ndim);
-    	//bdmm.stateNumber.setValue(ndim, bdmm);
-    	
-    	System.out.println("saveToBDMM: " + R0EstCheckBox.isSelected());
     	
     	
-    	// Parse R0
-    	StringBuilder sbR0 = new StringBuilder();
-    	for (int i = 0; i < this.r0ModelVals.size(); i++) {
-    		String val = this.r0ModelVals.get(i).getText();
-    		try {
-    			double x = Double.parseDouble(val);
-    			sbR0.append("" + x);
-    		}catch(Exception e) {
-    			sbR0.append("" + this.DEFAULT_R0);
-    		}
-    		if (i < this.r0ModelVals.size()-1) sbR0.append(" ");
-    	}
-    	bdmm.R0.get().setDimension(this.r0ModelVals.size());
-        bdmm.R0.setValue(sbR0.toString(), bdmm.R0.get());
-        bdmm.R0.get().isEstimatedInput.setValue(R0EstCheckBox.isSelected(), bdmm.R0.get()); // Why does the prior not disappear??
-        System.out.println("r0 " + sbR0.toString() + " dim " + ndim + " , " + bdmm.R0.get().toXML());
-        
+    	// Parse parameters
+    	this.saveParameter(bdmm.R0.get(), r0ModelVals, R0EstCheckBox.isSelected());
+    	this.saveParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaEstCheckBox.isSelected());
+    	this.saveParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingEstCheckBox.isSelected());
+
         
         loadingInProgress = false;
     	refreshPanel();
