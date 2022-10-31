@@ -213,7 +213,7 @@
 
             <plugin spec='beast.base.evolution.tree.coalescent.RandomTree' id='Tree.t:$(n)' estimate='true'>
                 <taxa idref='data'/>
-                <taxonset id='taxonSet.$(n)' spec="beast.base.evolution.alignment.TaxonSet" alignment="@data"/>
+                <taxonset id='TaxonSet.$(n)' spec="beast.base.evolution.alignment.TaxonSet" alignment="@data"/>
                 <populationModel id='ConstantPopulation0.t:$(n)' spec='ConstantPopulation'>
             		<popSize id='randomPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
 	            </populationModel>
@@ -239,7 +239,7 @@
             <distribution spec="bdmm.evolution.speciation.BirthDeathMigrationModelUncoloured" id="birthDeathMigration.t:$(n)" tree="@Tree.t:$(n)"
 				  stateNumber="2" conditionOnSurvival="true">
 				  <tiptypes spec="beast.base.evolution.tree.TraitSet" traitname="type" id="typeTraitSet.t:$(n)" value="">
-                      <taxa idref="taxonSet.$(n)"/>
+                      <taxa idref="TaxonSet.$(n)"/>
 				  </tiptypes>
                 <migrationMatrix spec="beast.base.inference.parameter.RealParameter" id="rateMatrix.t:$(n)" value="0.01" dimension="2" lower="0" upper="100"/>
                 <frequencies spec="parameter.RealParameter" id="geo-frequencies.t:$(n)" value=".5 .5" lower="0." upper="1." dimension="2"/>

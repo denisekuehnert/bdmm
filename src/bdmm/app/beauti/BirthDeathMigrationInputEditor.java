@@ -108,8 +108,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 		pane = FXUtils.newVBox();
 		this.bdmm = (BirthDeathMigrationModel) ((ArrayList) input.get()).get(0);
 		
-	
-		
+
 		VBox outerBox = FXUtils.newVBox();
 		
         // 3 columns
