@@ -11,13 +11,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.TextAlignment;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -62,23 +66,21 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 
 	
 	CheckBox R0EstCheckBox, deltaEstCheckBox, samplingEstCheckBox, rateMatrixEstCheckBox;
-    HBox r0Box, deltaBox, samplingBox, rateMatrixBox;
-    List<TextField> r0ModelVals, deltaModelVals, samplingModelVals, rateMatrixModelVals;
+    HBox r0Box, deltaBox, samplingBox, samplingChangeBox;
+    List<TextField> r0ModelVals, deltaModelVals, samplingModelVals, samplingChangeModelVals;
     
+    
+    VBox rateMatrixTextFieldBox;
+    List<HBox> rateMatrixBoxes;
+    List<List<TextField>> rateMatrixModelVals;
     
     Spinner<Integer> dimSpinner;
     
-    SpinnerNumberModel nTypesModel;
     BirthDeathMigrationModel bdmm;
     
     
-    final double DEFAULT_R0 = 2;
-    final double DEFAULT_DELTA = 1;
-    final double DEFAULT_SAMPLING = 0.01;
-    final double DEFAULT_M = 0.1;
-
     
-
+    boolean initialising = false;
     boolean dimChangeInProgress = false;
     boolean loadingInProgress = false;
 
@@ -98,6 +100,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     @Override
     public void init(Input<?> input, BEASTInterface beastObject, int itemNr, ExpandOption bExpandOption, boolean bAddButtons) {
 
+    	initialising = true;
     	
     	m_input = input;
     	m_beastObject = beastObject;
@@ -107,18 +110,21 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 		
 	
 		
-		VBox box = FXUtils.newVBox();
+		VBox outerBox = FXUtils.newVBox();
+		
+        // 3 columns
+		GridPane gridPane = new GridPane();
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
 
 		
 		// Number of demes
-		HBox nrOfDemesBox = new HBox();
 		Label nrOfDemesLabel = new Label("Number of demes:");
-		nrOfDemesBox.getChildren().add(nrOfDemesLabel);
         dimSpinner = new Spinner<>(2, 100, 2);
         dimSpinner.setEditable(true);
-       
-        nrOfDemesBox.getChildren().add(dimSpinner);
-        box.getChildren().add(nrOfDemesBox);
+        dimSpinner.setPrefWidth(100);
+        gridPane.add(nrOfDemesLabel, 0, 0);
+        gridPane.add(dimSpinner, 1, 0);
         
         
         int ndim = dimSpinner.getValue();
@@ -128,32 +134,47 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         r0Box = new HBox();
         r0ModelVals = new ArrayList<>();
         R0EstCheckBox = new CheckBox("estimate");
-        HBox r0BoxEst = this.initParameter(bdmm.R0.get(), "Reproduction number per type:", r0Box, r0ModelVals, R0EstCheckBox, bdmm.R0.getTipText(), ndim, DEFAULT_R0);
-        box.getChildren().add(r0Box);
-        box.getChildren().add(r0BoxEst);
-        
+        this.initParameter(gridPane, 1, bdmm.R0.get(), "Reproduction number per type:", r0Box, r0ModelVals, R0EstCheckBox, bdmm.R0.getTipText(), ndim);
+
         
         // Init delta
         deltaBox = new HBox();
         deltaModelVals = new ArrayList<>();
         deltaEstCheckBox = new CheckBox("estimate");
-        HBox deltaBoxEst = this.initParameter(bdmm.becomeUninfectiousRate.get(),"BecomeUninfectionRate per type:", deltaBox, deltaModelVals, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText(), ndim, DEFAULT_DELTA);
-        box.getChildren().add(deltaBox);
-        box.getChildren().add(deltaBoxEst);
+        this.initParameter(gridPane, 2, bdmm.becomeUninfectiousRate.get(),"BecomeUninfectionRate per type:", deltaBox, deltaModelVals, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText(), ndim);
         
         
         // Init sampling proportion
         samplingBox = new HBox();
         samplingModelVals = new ArrayList<>();
         samplingEstCheckBox = new CheckBox("estimate");
-        HBox samplingBoxEst = this.initParameter(bdmm.samplingProportion.get(), "SamplingProportion per type:", samplingBox, samplingModelVals, samplingEstCheckBox, bdmm.samplingProportion.getTipText(), ndim*2, DEFAULT_SAMPLING);
-        box.getChildren().add(samplingBox);
-        box.getChildren().add(samplingBoxEst);
+        this.initParameter(gridPane, 3, bdmm.samplingProportion.get(), "SamplingProportion per type:", samplingBox, samplingModelVals, samplingEstCheckBox, bdmm.samplingProportion.getTipText(), ndim*2);
+
         
         
+        // Init sampling change times but hide the first box
+        samplingChangeBox = new HBox();
+        samplingChangeModelVals = new ArrayList<>();
+        this.initParameter(gridPane, 4, bdmm.samplingRateChangeTimesInput.get(), "Sampling change time:", samplingChangeBox, samplingChangeModelVals, null, bdmm.samplingRateChangeTimesInput.getTipText(), 2);
+        samplingChangeModelVals.get(0).setVisible(false);
+        samplingChangeModelVals.get(0).setManaged(false);
         
-        pane.getChildren().add(box);
+        
+        // Init migration matrix
+        rateMatrixTextFieldBox = new VBox();
+        rateMatrixBoxes = new ArrayList<>();
+        rateMatrixModelVals = new ArrayList<>();
+        rateMatrixEstCheckBox = new CheckBox("estimate");
+    	this.initMatrix(gridPane, 5, bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, "Migration rates:", rateMatrixBoxes, rateMatrixModelVals, rateMatrixEstCheckBox, bdmm.migrationMatrix.getTipText(), ndim);
+        	  
+        
+        
+        outerBox.getChildren().add(gridPane);
+        pane.getChildren().add(outerBox);
         getChildren().add(pane);
+        
+        
+        initialising = false;
         
         loadFromBDMM();
         
@@ -174,361 +195,59 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 
 
              // Update R0
-             setVectorDimension(bdmm.R0.get(), r0Box, r0ModelVals, oldDim, newDim, DEFAULT_R0, bdmm.R0.getTipText());
-             this.saveParameter(bdmm.R0.get(), r0ModelVals, R0EstCheckBox.isSelected());
+             setVectorDimension(bdmm.R0.get(), r0Box, r0ModelVals, oldDim, newDim, bdmm.R0.getTipText());
              
              // Update delta
-             setVectorDimension(bdmm.becomeUninfectiousRate.get(), deltaBox, deltaModelVals, oldDim, newDim, DEFAULT_DELTA, bdmm.becomeUninfectiousRate.getTipText());
-             this.saveParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaEstCheckBox.isSelected());
+             setVectorDimension(bdmm.becomeUninfectiousRate.get(), deltaBox, deltaModelVals, oldDim, newDim, bdmm.becomeUninfectiousRate.getTipText());
 
              // Update sampling proportion
-             setVectorDimension(bdmm.samplingProportion.get(),samplingBox, samplingModelVals, oldDim*2, newDim*2, DEFAULT_SAMPLING, bdmm.samplingProportion.getTipText());
-             this.saveParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingEstCheckBox.isSelected());
+             setVectorDimension(bdmm.samplingProportion.get(), samplingBox, samplingModelVals, oldDim*2, newDim*2, bdmm.samplingProportion.getTipText());
 
-        	
+             // Update sampling change times 
+             setVectorDimension(bdmm.samplingRateChangeTimesInput.get(), samplingChangeBox, samplingChangeModelVals, 2, 2, bdmm.samplingRateChangeTimesInput.getTipText());
+
+             // Update migration matrix 
+             setMatrixDimension(bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, rateMatrixBoxes, rateMatrixModelVals, newDim, bdmm.migrationMatrix.getTipText());
+             
+             
+             System.out.println(" r0ModelVals " + r0ModelVals.size());
+             
+             
+            
+             
+             // Ensure frequencies sum to 1
+             StringBuilder sbfreqs = new StringBuilder();
+             double fr = Math.round(100./newDim)/100.;
+             for (int i=0; i<newDim; i++) {
+                 if (i>0)
+                     sbfreqs.append(" ");
+
+                 if (i==0)   // make sure frequencies add up to 1
+                     sbfreqs.append(Double.toString(Math.round(100*(1-(newDim-1)*fr))/100.));
+                 else
+                     sbfreqs.append(Double.toString(fr));
+
+             }
+            
+             bdmm.frequencies.get().valuesInput.setValue(sbfreqs.toString(), bdmm.frequencies.get());
+             bdmm.frequencies.get().setDimension(newDim);
+             bdmm.frequencies.get().initAndValidate();
+             bdmm.stateNumber.setValue(newDim, bdmm);
+             //bdmm.setInputValue("stateNumber", newDim);
+             
+             saveParameters();
+             
              System.out.println("Dimension change finishing.");
 
-             bdmm.setInputValue("stateNumber", newDim);
+             
              dimChangeInProgress = false;
+             
+
         	
         });
 
 
-        
- 
-    	/*
-    	
-    	
-    	
-    	if (this.pane != null) {
-    		// get here when refreshing
-    		pane.getChildren().clear();
-    	} else {    	
-    		this.pane = FXUtils.newHBox();
-    		getChildren().add(pane);
-    	}
-    	
-    	
-        // Set up fields
-        m_bAddButtons = bAddButtons;
-        m_input = input;
-        m_beastObject = beastObject;
-		this.itemNr = itemNr;
-
-        // Adds label to left of input editor
-        addInputLabel();
-
-        // Create component models and fill them with data from input
-        bdmm = (BirthDeathMigrationModel) ((ArrayList) input.get()).get(0);
-        nTypesModel = new SpinnerNumberModel(2, 2, Short.MAX_VALUE, 1);
-        R0Model = new DefaultTableModel();
-        deltaModel = new DefaultTableModel();
-        samplingModel = new DefaultTableModel();
-        samplingTimesModel = new DefaultTableModel();
-        rateMatrixModel = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return row != column;
-            }
-        };
-        R0EstCheckBox = new JCheckBox("estimate");
-        deltaEstCheckBox = new JCheckBox("estimate");
-        samplingEstCheckBox = new JCheckBox("estimate");
-        rateMatrixEstCheckBox = new JCheckBox("estimate");
-        loadFromBDMM();
-
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(new EtchedBorder());
-
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(3, 3, 3, 3);
-        c.weighty = 0.5;
-
-        // Deme count spinner:
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0.0;
-        c.anchor = GridBagConstraints.LINE_END;
-        panel.add(new JLabel("Number of demes: "), c);
-        JSpinner dimSpinner = new JSpinner(nTypesModel);
-        dimSpinner.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
-        c.gridx = 1;
-        c.gridy = 0;
-        c.weightx = 1.0;
-        c.anchor = GridBagConstraints.LINE_START;
-        panel.add(dimSpinner, c);
-
-        // Reproduction number table
-        c.gridx = 0;
-        c.gridy = 1;
-        c.weightx = 0.0;
-        c.anchor = GridBagConstraints.LINE_END;
-        panel.add(new JLabel("Reproduction number per type: "), c);
-        JTable R0Table = new JTable(R0Model);
-        R0Table.setShowVerticalLines(true);
-        R0Table.setCellSelectionEnabled(true);
-        R0Table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        R0Table.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
-
-        c.gridx = 1;
-        c.gridy = 1;
-        c.weightx = 1.0;
-        c.anchor = GridBagConstraints.LINE_START;
-        panel.add(R0Table, c);
-        R0EstCheckBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
-        c.gridx = 2;
-        c.anchor = GridBagConstraints.LINE_END;
-        c.weightx = 1.0;
-        panel.add(R0EstCheckBox, c);
-
-        // becomeUninfectiousRate table
-        c.gridx = 0;
-        c.gridy = 2;
-        c.weightx = 0.0;
-        c.anchor = GridBagConstraints.LINE_END;
-        panel.add(new JLabel("BecomeUninfectiousRate per type: "), c);
-        JTable deltaTable = new JTable(deltaModel);
-        deltaTable.setShowVerticalLines(true);
-        deltaTable.setCellSelectionEnabled(true);
-        deltaTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        deltaTable.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
-
-        c.gridx = 1;
-        c.gridy = 2;
-        c.weightx = 1.0;
-        c.anchor = GridBagConstraints.LINE_START;
-        panel.add(deltaTable, c);
-        deltaEstCheckBox.setSelected(bdmm.becomeUninfectiousRate.get().isEstimatedInput.get());
-        c.gridx = 2;
-        c.gridy = 2;
-        c.anchor = GridBagConstraints.LINE_END;
-        c.weightx = 1.0;
-        panel.add(deltaEstCheckBox, c);
-
-
-        // Sampling proportion table
-        c.gridx = 0;
-        c.gridy = 3;
-        c.weightx = 0.0;
-        c.anchor = GridBagConstraints.LINE_END;
-        panel.add(new JLabel("SamplingProportion per type: "), c);
-        JTable samplingTable = new JTable(samplingModel);
-        samplingTable.setShowVerticalLines(true);
-        samplingTable.setCellSelectionEnabled(true);
-        samplingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        samplingTable.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
-
-        c.gridx = 1;
-        c.gridy = 3;
-        c.weightx = 1.0;
-        c.anchor = GridBagConstraints.LINE_START;
-        panel.add(samplingTable, c);
-        samplingEstCheckBox.setSelected(bdmm.samplingProportion.get().isEstimatedInput.get());
-        c.gridx = 2;
-        c.gridy = 3;
-        c.anchor = GridBagConstraints.LINE_END;
-        c.weightx = 1.0;
-        panel.add(samplingEstCheckBox, c);
-
-        // Sampling change times table
-        c.gridx = 0;
-        c.gridy = 4;
-        c.weightx = 0.0;
-        c.anchor = GridBagConstraints.LINE_END;
-        panel.add(new JLabel("Sampling change time: "), c);
-        JTable samplingTimesTable = new JTable(samplingTimesModel);
-        samplingTimesTable.setShowVerticalLines(true);
-        samplingTimesTable.setCellSelectionEnabled(true);
-        samplingTimesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        samplingTimesTable.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
-
-        c.gridx = 1;
-        c.gridy = 4;
-        c.weightx = 1.0;
-        c.anchor = GridBagConstraints.LINE_START;
-        panel.add(samplingTimesTable, c);
-
-        // Migration rate table
-        // (Uses custom cell renderer to grey out diagonal elements.)
-        c.gridx = 0;
-        c.gridy = 5;
-        c.weightx = 0.0;
-        c.anchor = GridBagConstraints.LINE_END;
-        panel.add(new JLabel("Migration rates: "), c);
-        JTable rateMatrixTable = new JTable(rateMatrixModel) {
-            @Override
-            public TableCellRenderer getCellRenderer(int row, int column) {
-                if (row != column)
-                    return super.getCellRenderer(row, column);
-                else
-                    return new DefaultTableCellRenderer() {
-                        @Override
-                        public Component getTableCellRendererComponent(
-                            JTable table, Object value, boolean isSelected,
-                            boolean hasFocus, int row, int column) {
-                            JLabel label = new JLabel();
-                            label.setOpaque(true);
-                            label.setBackground(Color.GRAY);
-                            return label;
-                        }
-                    };
-            }
-        };
-        rateMatrixTable.setShowGrid(true);
-        rateMatrixTable.setCellSelectionEnabled(true);
-        rateMatrixTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        rateMatrixTable.setMaximumSize(new Dimension(100, Short.MAX_VALUE));
-
-        c.gridx = 1;
-        c.gridy = 5;
-        c.anchor = GridBagConstraints.LINE_START;
-        c.weightx = 1.0;
-        panel.add(rateMatrixTable, c);
-        rateMatrixEstCheckBox.setSelected(bdmm.migrationMatrix.get().isEstimatedInput.get());
-
-        c.gridx = 2;
-        c.gridy = 5;
-        c.anchor = GridBagConstraints.LINE_END;
-        c.weightx = 1.0;
-        panel.add(rateMatrixEstCheckBox, c);
-
-       
-        
-        //add(panel);
-        
-        SwingNode n = new SwingNode();
-        n.setContent(panel);
-        this.pane.getChildren().add(n);
-
-
-        // Event handlers
-
-        dimSpinner.addChangeListener((ChangeEvent e) -> {
-            JSpinner spinner = (JSpinner)e.getSource();
-            int newDim = (int)spinner.getValue();
-            int oldDim = bdmm.stateNumber.get();
-
-            dimChangeInProgress = true;
-
-            System.out.println("Dimension change starting.");
-
-            int samplingIntervals = samplingModel.getColumnCount()/oldDim;
-
-            R0Model.setColumnCount(R0Model.getColumnCount()/oldDim*newDim);
-            bdmm.R0.get().setDimension(R0Model.getColumnCount());
-            deltaModel.setColumnCount(deltaModel.getColumnCount()/oldDim*newDim);
-            bdmm.becomeUninfectiousRate.get().setDimension(deltaModel.getColumnCount());
-            samplingModel.setColumnCount(samplingIntervals*newDim);
-            bdmm.samplingProportion.get().setDimension(samplingModel.getColumnCount());
-            bdmm.setInputValue("stateNumber",newDim);
-
-            StringBuilder sbfreqs = new StringBuilder();
-            double fr = Math.round(100./newDim)/100.;
-            for (int i=0; i<newDim; i++) {
-                if (i>0)
-                    sbfreqs.append(" ");
-
-                if (i==0)   // make sure frequencies add up to 1
-                    sbfreqs.append(Double.toString(Math.round(100*(1-(newDim-1)*fr))/100.));
-                else
-                    sbfreqs.append(Double.toString(fr));
-
-            }
-            bdmm.frequencies.get().valuesInput.setValue(
-                    sbfreqs.toString(),
-                    bdmm.frequencies.get());
-
-            bdmm.setInputValue("frequencies",sbfreqs.toString());
-
-            rateMatrixModel.setColumnCount(newDim);
-            rateMatrixModel.setRowCount(newDim);
-            bdmm.migrationMatrix.get().setDimension(newDim*newDim);
-            for (int i=0; i<newDim; i++) {
-                if (R0Model.getValueAt(0, i) == null) {
-                    R0Model.setValueAt(2.0, 0, i);
-                }
-                if (deltaModel.getValueAt(0, i) == null) {
-                    deltaModel.setValueAt(1.0, 0, i);
-                }
-                for (int j=0; j<samplingIntervals; j++) {
-                    int k = i * samplingIntervals + j;
-                    if (samplingModel.getValueAt(0, k) == null) {
-                        samplingModel.setValueAt(1.0, 0, k);
-                    }
-                }
-                for (int j=0; j<newDim; j++) {
-                    if (i==j)
-                        continue;
-                    if (rateMatrixModel.getValueAt(j, i) == null) {
-                        rateMatrixModel.setValueAt(0.1, j, i);
-                    }
-                }
-            }
-
-            System.out.println("Dimension change finishing.");
-
-            dimChangeInProgress = false;
-
-            saveToBDMM();
-        });
-
-        R0Model.addTableModelListener((TableModelEvent e) -> {
-            if (e.getType() != TableModelEvent.UPDATE)
-                return;
-
-            if (!dimChangeInProgress)
-                saveToBDMM();
-        });
-
-        R0EstCheckBox.addItemListener((ItemEvent e) -> {
-            saveToBDMM();
-        });
-
-        deltaModel.addTableModelListener((TableModelEvent e) -> {
-            if (e.getType() != TableModelEvent.UPDATE)
-                return;
-
-            if (!dimChangeInProgress)
-                saveToBDMM();
-        });
-
-        deltaEstCheckBox.addItemListener((ItemEvent e) -> {
-            saveToBDMM();
-        });
-
-        samplingModel.addTableModelListener((TableModelEvent e) -> {
-            if (e.getType() != TableModelEvent.UPDATE)
-                return;
-
-            if (!dimChangeInProgress)
-                saveToBDMM();
-        });
-
-        samplingEstCheckBox.addItemListener((ItemEvent e) -> {
-            saveToBDMM();
-        });
-
-        samplingTimesModel.addTableModelListener((TableModelEvent e) -> {
-            if (e.getType() != TableModelEvent.UPDATE)
-                return;
-
-            if (!dimChangeInProgress)
-                saveToBDMM();
-        });
-
-        rateMatrixModel.addTableModelListener((TableModelEvent e) -> {
-            if (e.getType() != TableModelEvent.UPDATE)
-                return;
-
-            if (!dimChangeInProgress)
-                saveToBDMM();
-        });
-
-        rateMatrixEstCheckBox.addItemListener((ItemEvent e) -> {
-            saveToBDMM();
-        });
-        
-        */
+    
     }
     
     
@@ -542,31 +261,105 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param tooltip
      * @return
      */
-    private HBox initParameter(RealParameter param, String name, HBox hbox, List<TextField> vector, CheckBox checkBox, String tooltip, int ndim, double defaultVal) {
+    private void initParameter(GridPane gridPane, int rowNum, RealParameter param, String name, HBox hbox, List<TextField> vector, CheckBox checkBox, String tooltip, int ndim) {
     	
         
     	// Label
         Label label = new Label(name);
         label.setTooltip(new Tooltip(tooltip));
-        hbox.getChildren().add(label);
         
-        // Add textfields
-        this.setVectorDimension(param, hbox, vector, vector.size(), ndim, defaultVal, tooltip);
+        
+        // Add textfields for editing values
+        this.setVectorDimension(param, hbox, vector, vector.size(), ndim, tooltip);
         
         // Add estimate checkbox
-        checkBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
-        checkBox.setTooltip(new Tooltip("Estimate value of this parameter in the MCMC chain"));
-        HBox r0BoxEst = new HBox();
-        r0BoxEst.getChildren().add(checkBox);
+        if (checkBox != null) {
+	        checkBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+	        checkBox.setTooltip(new Tooltip("Estimate value of this parameter in the MCMC chain"));
+	        
+	        
+	        // Checkbox event listener
+	        checkBox.setOnAction(e -> {
+	        	saveToBDMM();
+	        });
+        }
         
+        // Add to gridpane
+        gridPane.add(label, 0, rowNum); // Column 0
+        gridPane.add(hbox, 1, rowNum); // Column 1
+        if (checkBox != null) gridPane.add(checkBox, 2, rowNum); // Column 2
         
-        // Checkbox event listener
-        checkBox.setOnAction(e -> {
-        	saveToBDMM();
-        });
     	
+    }
+    
+    /**
+     * Same as above but for a matrix
+     * @param gridPane
+     * @param rowNum
+     * @param param
+     * @param name
+     * @param hboxes
+     * @param vector
+     * @param checkBox
+     * @param tooltip
+     * @param ndim
+     */
+    private void initMatrix(GridPane gridPane, int rowNum, RealParameter param, VBox vbox, String name, List<HBox> hboxes, List<List<TextField>> matrix, CheckBox checkBox, String tooltip, int ndim) {
+    	
+    	// Label
+        Label label = new Label(name);
+        label.setTooltip(new Tooltip(tooltip));
         
-        return r0BoxEst;
+        
+        // Add textfields for editing values
+        hboxes.clear();
+        int entryNum = 0;
+        for (int row = 0; row < ndim; row++) {
+        	HBox hb = new HBox();
+        	
+        	List<TextField> vec = new ArrayList<>();
+        	//this.setVectorDimension(param, hb, vec, vec.size(), ndim, tooltip);
+        	for (int col = 0; col < ndim; col++) {
+    			
+    			
+    			TextField tf;
+    			if (row == col) {
+    				
+    				// Disable the diagonal elements
+    				tf = createTextField(param, -1, hb, tooltip, 1);
+    				tf.setDisable(true);
+    				tf.setText("");
+    			}else {
+    				tf = createTextField(param, entryNum, hb, tooltip, 1);
+    				entryNum ++;
+    			}
+    			vec.add(tf);
+    			
+       	 	}
+        	
+        	vbox.getChildren().add(hb);
+        	hboxes.add(hb);
+        	matrix.add(vec);
+        }
+        
+        
+        // Add estimate checkbox
+        if (checkBox != null) {
+	        checkBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+	        checkBox.setTooltip(new Tooltip("Estimate value of this parameter in the MCMC chain"));
+	        
+	        
+	        // Checkbox event listener
+	        checkBox.setOnAction(e -> {
+	        	saveToBDMM();
+	        });
+        }
+        
+        // Add to gridpane
+        gridPane.add(label, 0, rowNum); // Column 0
+        gridPane.add(vbox, 1, rowNum); // Column 1
+        if (checkBox != null) gridPane.add(checkBox, 2, rowNum); // Column 2
+        
     	
     }
     
@@ -576,10 +369,15 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param param
      * @param vector
      */
-    private void saveParameter(RealParameter param, List<TextField> vector, boolean selected) {
+    private void saveParameter(RealParameter param, List<TextField> vector, Boolean selected, int ndim) {
     	
-    	param.setDimension(vector.size());
-    	param.isEstimatedInput.setValue(selected, param);
+    	
+    	
+    	if (selected != null) {
+    		param.isEstimatedInput.setValue(selected, param);
+    	}
+    	
+    	/*
     	for (int i = 0; i < vector.size(); i++) {
     		String val = vector.get(i).getText();
     		double x;
@@ -590,7 +388,58 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     			
     		}
     	}
+    	*/
+    	 StringBuilder sb = new StringBuilder();
+    	 for (int i = 0; i < ndim; i++) {
+    		 String val = vector.get(i).getText();
+             if (i>0) sb.append(" ");
+             sb.append(val);
+         }
+    	 param.valuesInput.setValue(sb.toString(), param);
+    	 param.setDimension(ndim);
+         //bdmm.setInputValue(input.getName(), sb.toString());
+         
     	
+    }
+    
+    
+    /**
+     * Saves a parameter from the gui to bdmm
+     * @param param
+     * @param vector
+     */
+    private void saveMatrix(RealParameter param, List<List<TextField>> matrix, Boolean selected, int ndim) {
+    	
+    	
+    	
+    	if (selected != null) {
+    		param.isEstimatedInput.setValue(selected, param);
+    	}
+    	
+    	
+    	 StringBuilder sb = new StringBuilder();
+    	 int entryNum = 0;
+    	 for (int row = 0; row < ndim; row++) {
+    		System.out.println("row " + row);
+         	List<TextField> vec = matrix.get(row);
+         	
+         	
+         	
+         	for (int col = 0; col < ndim; col++) {
+         		System.out.println("row " + row + " col " + col);
+        		if (row == col) continue;
+         	
+        		String val = vec.get(col).getText();
+        		if (entryNum>0) sb.append(" ");
+        		sb.append(val);
+        		entryNum++;
+        		
+         	}
+         }
+    	 param.valuesInput.setValue(sb.toString(), param);
+    	 param.setDimension(ndim*(ndim-1));
+    	
+   
     }
     
     
@@ -599,14 +448,20 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param param
      * @param vector
      */
-    private void loadParameter(RealParameter param, List<TextField> vector, HBox hbox, CheckBox checkBox, double defaultVal, String tipText) {
+    private void loadParameter(RealParameter param, List<TextField> vector, HBox hbox, CheckBox checkBox, String tipText) {
+    	
     	
     	
     	// Estimate?
-    	checkBox.setSelected(param.isEstimatedInput.get());
+    	if (checkBox != null) {
+    		checkBox.setSelected(param.isEstimatedInput.get());
+    	}
+    	
+    	
+    	//System.out.println("loading " + param.getID() + " dimension to " + param.getDimension());
     	
     	// Resize the vectors
-    	this.setVectorDimension(param, hbox, vector, param.getDimension(), param.getDimension(), defaultVal, tipText);
+    	this.setVectorDimension(param, hbox, vector, param.getDimension(), param.getDimension(), tipText);
     	
     	// Load their values into javafx
     	for (int i = 0; i < param.getDimension(); i++) {
@@ -618,23 +473,77 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     }
     
     
+    /**
+     * Same as above but for a matrix
+     * @param param
+     * @param rateMatrixModelVals2
+     * @param rateMatrixBoxes2
+     * @param rateMatrixEstCheckBox2
+     * @param tipText
+     */
+    private void loadMatrix(RealParameter param, VBox vbox, List<List<TextField>> matrix, List<HBox> hboxes, CheckBox checkBox, String tooltip, int ndim) {
+		
+    	
+
+    	
+    	// Estimate?
+    	if (checkBox != null) {
+    		checkBox.setSelected(param.isEstimatedInput.get());
+    	}
+    	
+    	// Add textfields for editing values
+    	this.setMatrixDimension(param, vbox, hboxes, matrix, ndim, tooltip);
+    	
+    	
+    	// Load their values into javafx
+    	int entryNum = 0;
+    	for (int row = 0; row < ndim; row++) {
+    		List<TextField> vec = matrix.get(row);
+	    	for (int col = 0; col < ndim; col++) {
+	    		if (row == col) continue;
+	    		TextField tf = vec.get(col);
+	    		double val = param.getArrayValue(entryNum);
+	    		tf.setText("" + val);
+	    		entryNum++;
+	    	}
+    	}
+    	
+    	
+        
+     
+		
+	}
+    
+    
     
     /**
-     * Resize a vector
+     * Resize a vector of textfields
      * @param hbox
      * @param vector
      * @param newDim
-     * @param defaultVal
      * @param tipText
      */
-    private void setVectorDimension(RealParameter param, HBox hbox, List<TextField> vector, int oldDim, int newDim, double defaultVal, String tipText) {
+    private void setVectorDimension(RealParameter param, HBox hbox, List<TextField> vector, int oldDim, int newDim, String tipText) {
     	oldDim = Math.min(oldDim, vector.size());
     	
     	if (oldDim == newDim) return;
     	
     	if (oldDim < newDim) {
+    		
+    		
+    		
+    		
     		for (int i = oldDim; i < newDim; i++) {
-    			TextField tf = createTextField(param, i, hbox, defaultVal, tipText);
+    			
+    			double defaultVal = oldDim == 0 ? 1 : param.getArrayValue(0);
+    			
+    			// Special case: ensure that every new second value of sampling proportion is non-zero
+        		if (i % 2 == 1 && param == bdmm.samplingProportion.get()) {
+        			defaultVal = 0.01;
+        		}
+        		
+    			
+    			TextField tf = createTextField(param, i, hbox, tipText, defaultVal);
     			vector.add(tf);
        	 	}
         }else {
@@ -644,6 +553,63 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         		vector.remove(i);
 			}
         }
+    	
+    	
+    	//System.out.println(param.getID() + " dimension to "+ vector.size());
+    	
+    }
+    
+    
+    /**
+     * Resize a matrix of textfields
+     * @param param
+     * @param vbox
+     * @param hboxes
+     * @param matrix
+     * @param oldDim
+     * @param newDim
+     * @param tooltip
+     */
+    private void setMatrixDimension(RealParameter param, VBox vbox, List<HBox> hboxes, List<List<TextField>> matrix, int ndim, String tooltip) {
+    	
+    	
+    	double defaultVal = param.getArrayValue(0);
+
+        // Add textfields for editing values
+    	vbox.getChildren().clear();
+        hboxes.clear();
+        matrix.clear();
+        int entryNum = 0;
+        for (int row = 0; row < ndim; row++) {
+        	HBox hb = new HBox();
+        	
+        	List<TextField> vec = new ArrayList<>();
+        	//this.setVectorDimension(param, hb, vec, vec.size(), ndim, tooltip);
+        	for (int col = 0; col < ndim; col++) {
+    			
+    			
+    			TextField tf;
+    			if (row == col) {
+    				
+    				// Disable the diagonal elements
+    				tf = createTextField(param, -1, hb, tooltip, 0);
+    				tf.setDisable(true);
+    				tf.setText("");
+    			}else {
+    				tf = createTextField(param, entryNum, hb, tooltip, defaultVal);
+    				entryNum ++;
+    			}
+    			vec.add(tf);
+    			
+       	 	}
+        	
+        	vbox.getChildren().add(hb);
+        	hboxes.add(hb);
+        	matrix.add(vec);
+        }
+        
+        
+
     }
     
     
@@ -654,7 +620,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param toopTip
      * @return
      */
-    private TextField createTextField(RealParameter param, int index, HBox hbox, double val, String toopTip) {
+    private TextField createTextField(RealParameter param, int index, HBox hbox, String toopTip, double val) {
     	
     	
     	TextField tf = new TextField();
@@ -664,15 +630,16 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     	
     	
     	tf.textProperty().addListener((observable, oldValue, newValue) -> {
-    		if (!oldValue.equals(newValue)) {
-    			//System.out.println("textfield changed from " + oldValue + " to " + newValue);
+    		if (!oldValue.equals(newValue) && !this.loadingInProgress && !this.dimChangeInProgress && !this.initialising) {
+    			//System.out.println("change in " + param.getID() + ": " + oldValue + " to " + newValue);
+
     			try {
         			double x = Double.parseDouble(newValue);
         			param.setValue(index, x);
         		}catch(Exception e) {
         			
         		}
-    			//saveToBDMM();
+    			saveParameters();
     		}
     	});
 
@@ -697,73 +664,75 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     	
     	dimSpinner.getValueFactory().setValue(ndim);
     
-    	this.loadParameter(bdmm.R0.get(), r0ModelVals, r0Box, R0EstCheckBox, this.DEFAULT_R0, bdmm.R0.getTipText());
-    	this.loadParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaBox, deltaEstCheckBox, this.DEFAULT_DELTA, bdmm.becomeUninfectiousRate.getTipText());
-    	this.loadParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingBox, samplingEstCheckBox, this.DEFAULT_SAMPLING, bdmm.samplingProportion.getTipText());
+    	this.loadParameter(bdmm.R0.get(), r0ModelVals, r0Box, R0EstCheckBox, bdmm.R0.getTipText());
+    	this.loadParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaBox, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText());
+    	this.loadParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingBox, samplingEstCheckBox, bdmm.samplingProportion.getTipText());
+    	this.loadParameter(bdmm.samplingRateChangeTimesInput.get(), samplingChangeModelVals, samplingChangeBox, null, bdmm.samplingRateChangeTimesInput.getTipText());
+    	this.loadMatrix(bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, rateMatrixModelVals, rateMatrixBoxes, rateMatrixEstCheckBox, bdmm.migrationMatrix.getTipText(), ndim);
     	
     	
     	
     	loadingInProgress = false;
     	
-    	/*
-        nTypesModel.setValue(bdmm.stateNumber.get());
-        R0Model.setRowCount(1);
-        R0Model.setColumnCount(bdmm.R0.get().getDimension());
-        deltaModel.setRowCount(1);
-        deltaModel.setColumnCount(bdmm.becomeUninfectiousRate.get().getDimension());
-        samplingModel.setRowCount(1);
-        samplingModel.setColumnCount(bdmm.samplingProportion.get().getDimension());
-        samplingTimesModel.setRowCount(1);
-        samplingTimesModel.setColumnCount(bdmm.samplingRateChangeTimesInput.get().getDimension()-1);
-        rateMatrixModel.setRowCount(bdmm.stateNumber.get());   // todo: allow changes in ratMatrix as well!
-        rateMatrixModel.setColumnCount(bdmm.stateNumber.get());
-
-        for (int i=0; i<bdmm.R0.get().getDimension(); i++) {
-            R0Model.setValueAt(bdmm.R0.get().getValue(i), 0, i);
-        }
-        for (int i=0; i<bdmm.becomeUninfectiousRate.get().getDimension(); i++) {
-            deltaModel.setValueAt(bdmm.becomeUninfectiousRate.get().getValue(i), 0, i);
-        }
-        for (int i=0; i<bdmm.samplingProportion.get().getDimension(); i++) {
-            samplingModel.setValueAt(bdmm.samplingProportion.get().getValue(i), 0, i);
-        }
-
-        for (int i=1; i<bdmm.samplingRateChangeTimesInput.get().getDimension(); i++) {
-            samplingTimesModel.setValueAt(bdmm.samplingRateChangeTimesInput.get().getValue(i), 0, i-1);
-        }
-sbR0
-        for (int i=0; i<bdmm.stateNumber.get(); i++) {
-            for (int j=0; j<bdmm.stateNumber.get(); j++) {
-                if (i == j)
-                    continue;
-                rateMatrixModel.setValueAt(bdmm.getNbyNRate(i, j), i, j);
-            }
-        }
-
-        R0EstCheckBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
-        deltaEstCheckBox.setSelected(bdmm.becomeUninfectiousRate.get().isEstimatedInput.get());
-        samplingEstCheckBox.setSelected(bdmm.samplingProportion.get().isEstimatedInput.get());
-        rateMatrixEstCheckBox.setSelected(bdmm.migrationMatrix.get().isEstimatedInput.get());
-        
-        */
     }
 
-    public void saveToBDMM() {
+    
+    public void saveParameters() {
+    	
+    	Integer ndim = dimSpinner.getValue();
+    	
+    	
+    	// Parse parameters
+    	this.saveParameter(bdmm.R0.get(), r0ModelVals, R0EstCheckBox.isSelected(), ndim);
+    	this.saveParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaEstCheckBox.isSelected(), ndim);
+    	this.saveParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingEstCheckBox.isSelected(), ndim*2);
+    	this.saveParameter(bdmm.samplingRateChangeTimesInput.get(), samplingChangeModelVals, null, 2);
+    	this.saveMatrix(bdmm.migrationMatrix.get(), rateMatrixModelVals, rateMatrixEstCheckBox.isSelected(), ndim);
+    	
+    	try {
+            bdmm.R0.get().initAndValidate();
+            bdmm.samplingProportion.get().initAndValidate();
+            bdmm.samplingRateChangeTimesInput.get().initAndValidate();
+            bdmm.becomeUninfectiousRate.get().initAndValidate();
+            bdmm.migrationMatrix.get().initAndValidate();
+            bdmm.initAndValidate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println("Error updating tree prior.");
+        }
+    	
+    	
+    	/*
+    	try {
+            bdmm.R0.get().initAndValidate();
+            bdmm.samplingProportion.get().initAndValidate();
+            bdmm.samplingRateChangeTimesInput.get().initAndValidate();
+            bdmm.becomeUninfectiousRate.get().initAndValidate();
+            bdmm.migrationMatrix.get().initAndValidate();
+            bdmm.initAndValidate();
+        } catch (Exception ex) {
+            System.err.println(ex.getCause());
+            System.err.println("Error updating tree prior.");
+        }
+    	*/
+
+
+    }
+  
+
+	public void saveToBDMM() {
     	
     	
     	if (dimChangeInProgress || loadingInProgress) return;
     	loadingInProgress = true;
     	
-    	
     	// Dimension
     	Integer ndim = dimSpinner.getValue();
     	bdmm.setInputValue("stateNumber", ndim);
     	
+    	saveParameters();
     	
-    	// Parse parameters
-    	this.saveParameter(bdmm.R0.get(), r0ModelVals, R0EstCheckBox.isSelected());
-    	this.saveParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaEstCheckBox.isSelected());
-    	this.saveParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingEstCheckBox.isSelected());
+    	
 
         
         loadingInProgress = false;
