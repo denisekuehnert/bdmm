@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beast beautitemplate='Standard' beautistatus=''
        namespace="beast.pkgmgmt:beast.base.core:beast.base.inference
-    :beast.evolution.tree.coalescent
-    :beast.core.util
-    :beast.evolution.nuc
-    :beast.evolution.operators
-    :beast.evolution.sitemodel
-    :beast.evolution.substitutionmodel
-    :beast.evolution.likelihood
-    :beast.evolution.tree
-    :beast.core.parameter
+    :beast.base.evolution.tree.coalescent
+    :beast.base.core.util
+    :beast.base.evolution.nuc
+    :beast.base.evolution.operator
+    :beast.base.inference.operator
+    :beast.base.evolution.sitemodel
+    :beast.base.evolution.substitutionmodel
+    :beast.base.evolution.likelihood
+    :beast.base.evolution.tree
+    :beast.base.core.parameter
     :multitypetree.operators
     :multitypetree.util
     :multitypetree.distributions

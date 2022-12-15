@@ -33,10 +33,9 @@
 	<map name="Normal">beast.base.inference.distribution.Normal</map>
 
 	<tree id="tree" spec='feast.fileio.TreeFromNexusFile'
-		  fileName='/Users/scirej/Documents/BEASTdev/bdmm/examples/BDMUC_example_rho_sampling.tree'
+		  fileName='BDMUC_example_rho_sampling.tree'
 		  IsLabelledNewick="true" adjustTipHeights="false"/>
-	<!-- TODO: CHANGE fileName ABOVE TO YOUR LOCAL PATH -->
-	<!--		  fileName='~/Documents/BEASTdev/bdmm/examples/BDMUC_example_rho_sampling.tree'-->
+
 
 	<distribution spec="bdmm.evolution.speciation.BirthDeathMigrationModelUncoloured" id="treePrior" tree="@tree"
 				  typeLabel="type" stateNumber="2" conditionOnSurvival="true" checkRho="true">

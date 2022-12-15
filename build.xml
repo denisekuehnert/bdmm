@@ -105,8 +105,8 @@
                 <fileset dir="${beastDir}/lib" includes="*.jar"/>
                 <fileset dir="${libBeast2}/junit" includes="*.jar"/>
                 <pathelement path="../BeastFX/build"/>
-                <pathelement path="../sampled-ancestors/build"/>
-                <pathelement path="../MultiTypeTree2.7/build"/>
+                <pathelement path="../MultiTypeTree/build"/>
+                <pathelement path="../MASTER/build"/>
 
             </classpath>
         </javac>
@@ -167,8 +167,8 @@
                 <fileset dir="${libBeast2}" includes="*.jar"/>
                 <fileset dir="${libBeast2}/junit" includes="*.jar"/>
                 <pathelement path="../BeastFX/build"/>
-                <pathelement path="../sampled-ancestors/build"/>
-                <pathelement path="../MultiTypeTree2.7/build"/>
+                <pathelement path="../MultiTypeTree/build"/>
+                <pathelement path="../MASTER/build"/>
             </classpath>
         </javac>
     </target>
@@ -196,8 +196,8 @@
                 <fileset dir="${libBeast2}" includes="*.jar"/>
                 <fileset dir="${libBeast2}/junit" includes="*.jar"/>
                 <pathelement path="../BeastFX/build"/>
-                <pathelement path="../sampled-ancestors/build"/>
-                <pathelement path="../MultiTypeTree2.7/build"/>
+                <pathelement path="../MultiTypeTree/build"/>
+                <pathelement path="../MASTER/build"/>
             </classpath>
             <batchtest fork="yes" todir="${test-reports}">
                 <fileset dir="${build}">

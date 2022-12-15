@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel
-:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:beast.evolution.tree.coalescent:multitypetree.operators:multitypetree.util:master.beast:master.conditions:master.model:master.postprocessors:master.outputs:master" version="2.0">
+:beast.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution.likelihood:beast.core.parameter:beastfx.app.seqgen:beast.evolution.tree.coalescent:multitypetree.operators:multitypetree.util:master.beast:master.conditions:beast.base.evolution.substitutionmodel:master.model:master.postprocessors:master.outputs:master" version="2.0">
 
 	<map name="Beta">beast.base.inference.distribution.Beta</map>
 	<map name="Exponential">beast.base.inference.distribution.Exponential</map>
@@ -115,7 +115,7 @@
 		<sequence spec="Sequence" taxon="100" value="?" />
 	</alignment>
 
-	<tree spec='BeastTreeFromMaster' id="mastertree"
+	<tree spec='master.BeastTreeFromMaster' id="mastertree"
 		  samplePopulationSizes="true"
 		  nSamples="1"
 		  reverseTime="false">
@@ -194,7 +194,7 @@
 	</tree>
 
 
-	<data spec='beast.app.seqgen.SimulatedAlignment' id='alignment'
+	<data spec='SimulatedAlignment' id='alignment'
 		  data="@input_alignment"
 		  sequencelength="2000"
 		  outputFileName="BDMUC_SequenceSimAnaLyzer_alignment.txt"
@@ -232,7 +232,7 @@
 	<run chainLength="5000000" id="mcmc" spec="MCMC" storeEvery="10000" numInitializationAttempts="100">
 
 
-		<init spec="RandomTreeFromMaster" masterTree="@mastertree"  taxa="@input_alignment">
+		<init spec="bdmm.core.util.RandomTreeFromMaster" masterTree="@mastertree"  taxa="@input_alignment">
 			<tree spec="beast.base.evolution.tree.coalescent.RandomTree" id="tree" taxa="@input_alignment">
 				<populationModel spec="ConstantPopulation">
 					<parameter name="popSize">5.0</parameter>
