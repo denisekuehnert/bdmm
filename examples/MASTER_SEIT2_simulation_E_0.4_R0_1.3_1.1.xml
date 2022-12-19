@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beast beautitemplate='Standard' beautistatus=''
-       namespace="beast.core
-    :beast.evolution.tree.coalescent
-    :beast.core.util
-    :beast.evolution.nuc
-    :beast.evolution.operators
-    :beast.evolution.sitemodel
-    :beast.evolution.substitutionmodel
-    :beast.evolution.likelihood
-    :beast.evolution.tree
-    :beast.core.parameter
+       namespace="beast.pkgmgmt:beast.base.core:beast.base.inference
+    :beast.base.evolution.tree.coalescent
+    :beast.base.core.util
+    :beast.base.evolution.nuc
+    :beast.base.evolution.operator
+    :beast.base.inference.operator
+    :beast.base.evolution.sitemodel
+    :beast.base.evolution.substitutionmodel
+    :beast.base.evolution.likelihood
+    :beast.base.evolution.tree
+    :beast.base.core.parameter
     :multitypetree.operators
     :multitypetree.util
     :multitypetree.distributions
@@ -22,11 +23,11 @@
     :master.postprocessors
     :master.BeastTreeFromMaster" version="2.0">
 
-    <map name="LogNormal">beast.math.distributions.LogNormalDistributionModel</map>
-    <map name="Uniform">beast.math.distributions.Uniform</map>
-    <map name="Beta">beast.math.distributions.Beta</map>
-    <map name="prior">beast.math.distributions.Prior</map>
-    <map name="CompoundDistribution">beast.core.util.CompoundDistribution</map>
+    <map name="LogNormal">beast.base.inference.distribution.LogNormalDistributionModel</map>
+    <map name="Uniform">beast.base.inference.distribution.Uniform</map>
+    <map name="Beta">beast.base.inference.distribution.Beta</map>
+    <map name="prior">beast.base.inference.distribution.Prior</map>
+    <map name="CompoundDistribution">beast.base.inference.CompoundDistribution</map>
 
     <!-- Use MASTER to generate an initial coalescent tree -->
     <tree spec='BeastTreeFromMaster' reverseTime='false' id='tree' samplePopulationSizes='true' collapseSingletons='true' origin='@origin'>
@@ -137,13 +138,13 @@
                 <distribution R0_base="@R0_base" lambda_ratio="@lambda_ratio"
                               becomeUninfectiousRate="@becomeUninfectiousRate" id="BDMM"
                               origin="@origin" samplingProportion="@samplingProportion"
-                              spec="beast.evolution.speciation.BirthDeathMigrationModelUncoloured" tree="@tree"
+                              spec="bdmm.evolution.speciation.BirthDeathMigrationModelUncoloured" tree="@tree"
                               originIsRootEdge="true" typeLabel="location"
                               removalProbability="@r" stateNumber="2" useRK="true">
 
-                    <migrationMatrix id="rateMatrix" spec='RealParameter' value="0.04 0" dimension="2" lower="0" upper="100"/>
+                    <migrationMatrix id="rateMatrix" spec='beast.base.inference.parameter.RealParameter' value="0.04 0" dimension="2" lower="0" upper="100"/>
 
-                    <frequencies id="geo-frequencies" spec='RealParameter' value="1 0" lower="0" upper="1" dimension="2"/>
+                    <frequencies id="geo-frequencies" spec='beast.base.inference.parameter.RealParameter' value="1 0" lower="0" upper="1" dimension="2"/>
                 </distribution>
                 <prior id="R0SensPrior" name="distribution" x="@R0_base">
                     <LogNormal M="0" S="0.5" name="distr"/>
@@ -178,15 +179,15 @@
             <parameter idref="rateMatrix" name="log"/>
             <log idref="r"/>
             <!--log id="SACount" spec="beast.evolution.tree.SampledAncestorLogger" tree="@tree"/-->
-            <!--log expression="R0 becomeUninfectiousRate *" id="birth" spec="beast.math.statistic.RPNcalculator">
+            <!--log expression="R0 becomeUninfectiousRate *" id="birth" spec="beast.base.inference.util.RPNcalculator">
                 <parameter idref="becomeUninfectiousRate"/>
                 <parameter idref="R0"/>
             </log-->
-            <!--log expression="becomeUninfectiousRate 1 samplingProportion - *" id="death" spec="beast.math.statistic.RPNcalculator">
+            <!--log expression="becomeUninfectiousRate 1 samplingProportion - *" id="death" spec="beast.base.inference.util.RPNcalculator">
                 <parameter idref="becomeUninfectiousRate"/>
                 <parameter idref="samplingProportion"/>
             </log>
-            <log expression="becomeUninfectiousRate samplingProportion *" id="sampling" spec="beast.math.statistic.RPNcalculator">
+            <log expression="becomeUninfectiousRate samplingProportion *" id="sampling" spec="beast.base.inference.util.RPNcalculator">
                 <parameter idref="becomeUninfectiousRate"/>
                 <parameter idref="samplingProportion"/>
             </log-->
