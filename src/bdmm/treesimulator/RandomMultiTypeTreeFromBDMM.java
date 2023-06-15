@@ -6,7 +6,6 @@ import beast.base.inference.StateNode;
 import beast.base.inference.StateNodeInitialiser;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.util.Randomizer;
-import beast.evolution.tree.*;
 import multitypetree.evolution.tree.MultiTypeNode;
 import multitypetree.evolution.tree.MultiTypeTree;
 
