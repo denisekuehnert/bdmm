@@ -26,19 +26,19 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 	public FirstOrderIntegrator p_integrator;
 
 	double[] b;
-	Double[] b_ij;
+	double[] b_ij;
 	double[] d;
-	Double[] s;
+	double[] s;
 
 	Boolean augmented;
 	Boolean birthAmongDemes;
 
-	Double[] M;
+	double[] M;
 	double T;
 
 	int dimension; /* ODE numberOfDemes = stateNumber */
 	int intervals;
-	Double[] times;
+	double[] times;
 	int index;
 
 	int maxEvals;
@@ -46,7 +46,7 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 	public static double globalPrecisionThreshold;
 
 
-	public p0ge_ODE(double[] b, Double[] b_ij, double[] d, Double[] s, Double[] M, int dimension, int intervals, double T, Double[] times, p0_ODE P, int maxEvals, Boolean augmented){
+	public p0ge_ODE(double[] b, double[] b_ij, double[] d, double[] s, double[] M, int dimension, int intervals, double T, double[] times, p0_ODE P, int maxEvals, Boolean augmented){
 
 
 		this.b = b;
@@ -102,7 +102,7 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 
 					}
 
-					if (M[0]!=null) {// migration:
+					if (M!=null) {// migration:
 						gDot[i] += M[l] * g[i];
 						gDot[i] -= M[l] * g[j];
 					}
@@ -130,7 +130,7 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 						}
 					}
 
-					if (M[0]!=null) {// migration:
+					if (M!=null) {// migration:
 						gDot[dimension + i] += M[l] * g[dimension + i];
 						if (!augmented) gDot[dimension + i] -= M[l] * g[dimension + j];
 					}
@@ -151,7 +151,7 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 	 * @param rho
 	 * @return
 	 */
-	public double[] getP(double t, double[]P0, double t0, Boolean rhoSampling, Double[] rho){
+	public double[] getP(double t, double[] P0, double t0, Boolean rhoSampling, double[] rho){
 
 
 		if (Math.abs(T-t)<globalPrecisionThreshold || Math.abs(t0-t)<globalPrecisionThreshold ||   T < t)
@@ -230,7 +230,7 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 	}
 
 
-	public double[] getP(double t, Boolean rhoSampling, Double[] rho){
+	public double[] getP(double t, Boolean rhoSampling, double[] rho){
 
 		double[] y = new double[dimension];
 
@@ -263,13 +263,13 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 
 		double[] b;
 		double[] d = {1.,1.};
-		Double[] s;
-		Double[] M;// = {3.,3.};
+		double[] s;
+		double[] M;// = {3.,3.};
 
-		Double psi;
+		double psi;
 
-		Double c1 = 0.01;
-		Double c2 = 0.1;
+		double c1 = 0.01;
+		double c2 = 0.1;
 
 
 		for (double i =1.1; i<2; i+=0.125){
@@ -279,10 +279,10 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 			//            psi = 0.5 * ((i - death[0]) - Math.sqrt((death[0] - i) * (death[0] - i) - .04));  // assume birth*sampling*m=constant
 
 
-			M = new Double[]{b[0]-d[0]-c2/b[0], b[0]-d[0]-c2/b[0]};     // assume birth-death-sampling=migration
+			M = new double[]{b[0]-d[0]-c2/b[0], b[0]-d[0]-c2/b[0]};     // assume birth-death-sampling=migration
 
 			psi = c2/c1 * M[0]; // assume birth*m = c1 and birth*sampling = c2
-			s = new Double[] {psi,psi};
+			s = new double[] {psi,psi};
 
 
 			FirstOrderIntegrator integrator1 = new ClassicalRungeKuttaIntegrator(.01);
@@ -298,8 +298,8 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 			double T = 1;
 			Boolean augmented = true;
 
-			p0_ODE p_ode = new p0_ODE(b,null, d,s,M, 2, 1, new Double[]{0.});
-			p0ge_ODE pg_ode = new p0ge_ODE(b,null, d,s,M, 2, 1, T, new Double[]{0.}, p_ode, Integer.MAX_VALUE,augmented);
+			p0_ODE p_ode = new p0_ODE(b,null, d,s,M, 2, 1, new double[]{0.});
+			p0ge_ODE pg_ode = new p0ge_ODE(b,null, d,s,M, 2, 1, T, new double[]{0.}, p_ode, Integer.MAX_VALUE,augmented);
 
 			System.out.println("birth[0] = "+b[0]+ ", death[0] = " + Math.round(d[0]*100.)/100.+ "\t\t");
 
@@ -369,8 +369,8 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 		double[] birth = {2.,2.};
 		double[] b;
 		double[] d = {.5,.5};
-		Double[] s = {.5,.5};
-		Double[] M = {0.,0.};
+		double[] s = {.5,.5};
+		double[] M = {0.,0.};
 
 		System.out.println("birth\tp\tg");
 
@@ -385,8 +385,8 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 		double T = 10.;
 		Boolean augmented = false;
 
-		p0_ODE p_ode = new p0_ODE(b,new Double[]{1.,1.}, d,s,M, 2, 1, new Double[]{0.});
-		p0ge_ODE pg_ode = new p0ge_ODE(b,new Double[]{1.,1.}, d,s,M, 2, 1, T, new Double[]{0.}, p_ode, Integer.MAX_VALUE,augmented);
+		p0_ODE p_ode = new p0_ODE(b,new double[]{1.,1.}, d,s,M, 2, 1, new double[]{0.});
+		p0ge_ODE pg_ode = new p0ge_ODE(b,new double[]{1.,1.}, d,s,M, 2, 1, T, new double[]{0.}, p_ode, Integer.MAX_VALUE,augmented);
 
 		pg_ode.p_integrator = integrator;
 		double[] p0 = new double[]{1.,1.};
@@ -398,11 +398,11 @@ public class p0ge_ODE implements FirstOrderDifferentialEquations {
 		integrator.integrate(p_ode, T, p0, 0., p);
 
 		double[] res2 = new double[] {4};
-		double[] res  = pg_ode.getP(8, false, new Double[]{0.});
+		double[] res  = pg_ode.getP(8, false, new double[]{0.});
 		System.out.println(b[0] + "\t" + res[0]+"\t"+res[1]);
-		res2 = pg_ode.getP(5, res, 8, false, new Double[]{0.});
+		res2 = pg_ode.getP(5, res, 8, false, new double[]{0.});
 		System.out.println(b[0] + "\t" + res[0]+"\t"+res[1]);
-		res2 = pg_ode.getP(0, res, 5, false, new Double[]{0.});
+		res2 = pg_ode.getP(0, res, 5, false, new double[]{0.});
 		System.out.println(b[0] + "\t" + res[0]+"\t"+res[1]);
 
 		//             System.out.print("birth[0] = "+birth[0]+ ", death[0] = " + Math.round(death[0]*100.)/100.+ "\t\t");

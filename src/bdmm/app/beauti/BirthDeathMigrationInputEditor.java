@@ -133,28 +133,28 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         r0Box = new HBox();
         r0ModelVals = new ArrayList<>();
         R0EstCheckBox = new CheckBox("estimate");
-        this.initParameter(gridPane, 1, bdmm.R0.get(), "Reproduction number per type:", r0Box, r0ModelVals, R0EstCheckBox, bdmm.R0.getTipText(), ndim);
+        this.initParameter(gridPane, 1, (RealParameter) bdmm.R0.get(), "Reproduction number per type:", r0Box, r0ModelVals, R0EstCheckBox, bdmm.R0.getTipText(), ndim);
 
         
         // Init delta
         deltaBox = new HBox();
         deltaModelVals = new ArrayList<>();
         deltaEstCheckBox = new CheckBox("estimate");
-        this.initParameter(gridPane, 2, bdmm.becomeUninfectiousRate.get(),"BecomeUninfectionRate per type:", deltaBox, deltaModelVals, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText(), ndim);
+        this.initParameter(gridPane, 2, (RealParameter) bdmm.becomeUninfectiousRate.get(),"BecomeUninfectionRate per type:", deltaBox, deltaModelVals, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText(), ndim);
         
         
         // Init sampling proportion
         samplingBox = new HBox();
         samplingModelVals = new ArrayList<>();
         samplingEstCheckBox = new CheckBox("estimate");
-        this.initParameter(gridPane, 3, bdmm.samplingProportion.get(), "SamplingProportion per type:", samplingBox, samplingModelVals, samplingEstCheckBox, bdmm.samplingProportion.getTipText(), ndim*2);
+        this.initParameter(gridPane, 3, (RealParameter) bdmm.samplingProportion.get(), "SamplingProportion per type:", samplingBox, samplingModelVals, samplingEstCheckBox, bdmm.samplingProportion.getTipText(), ndim*2);
 
         
         
         // Init sampling change times but hide the first box
         samplingChangeBox = new HBox();
         samplingChangeModelVals = new ArrayList<>();
-        this.initParameter(gridPane, 4, bdmm.samplingRateChangeTimesInput.get(), "Sampling change time:", samplingChangeBox, samplingChangeModelVals, null, bdmm.samplingRateChangeTimesInput.getTipText(), 2);
+        this.initParameter(gridPane, 4, (RealParameter) bdmm.samplingRateChangeTimesInput.get(), "Sampling change time:", samplingChangeBox, samplingChangeModelVals, null, bdmm.samplingRateChangeTimesInput.getTipText(), 2);
         samplingChangeModelVals.get(0).setVisible(false);
         samplingChangeModelVals.get(0).setManaged(false);
         
@@ -164,7 +164,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         rateMatrixBoxes = new ArrayList<>();
         rateMatrixModelVals = new ArrayList<>();
         rateMatrixEstCheckBox = new CheckBox("estimate");
-    	this.initMatrix(gridPane, 5, bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, "Migration rates:", rateMatrixBoxes, rateMatrixModelVals, rateMatrixEstCheckBox, bdmm.migrationMatrix.getTipText(), ndim);
+    	this.initMatrix(gridPane, 5, (RealParameter) bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, "Migration rates:", rateMatrixBoxes, rateMatrixModelVals, rateMatrixEstCheckBox, bdmm.migrationMatrix.getTipText(), ndim);
         	  
         
         
@@ -194,19 +194,19 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
 
 
              // Update R0
-             setVectorDimension(bdmm.R0.get(), r0Box, r0ModelVals, oldDim, newDim, bdmm.R0.getTipText());
+             setVectorDimension((RealParameter) bdmm.R0.get(), r0Box, r0ModelVals, oldDim, newDim, bdmm.R0.getTipText());
              
              // Update delta
-             setVectorDimension(bdmm.becomeUninfectiousRate.get(), deltaBox, deltaModelVals, oldDim, newDim, bdmm.becomeUninfectiousRate.getTipText());
+             setVectorDimension((RealParameter) bdmm.becomeUninfectiousRate.get(), deltaBox, deltaModelVals, oldDim, newDim, bdmm.becomeUninfectiousRate.getTipText());
 
              // Update sampling proportion
-             setVectorDimension(bdmm.samplingProportion.get(), samplingBox, samplingModelVals, oldDim*2, newDim*2, bdmm.samplingProportion.getTipText());
+             setVectorDimension((RealParameter) bdmm.samplingProportion.get(), samplingBox, samplingModelVals, oldDim*2, newDim*2, bdmm.samplingProportion.getTipText());
 
              // Update sampling change times 
-             setVectorDimension(bdmm.samplingRateChangeTimesInput.get(), samplingChangeBox, samplingChangeModelVals, 2, 2, bdmm.samplingRateChangeTimesInput.getTipText());
+             setVectorDimension((RealParameter) bdmm.samplingRateChangeTimesInput.get(), samplingChangeBox, samplingChangeModelVals, 2, 2, bdmm.samplingRateChangeTimesInput.getTipText());
 
              // Update migration matrix 
-             setMatrixDimension(bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, rateMatrixBoxes, rateMatrixModelVals, newDim, bdmm.migrationMatrix.getTipText());
+             setMatrixDimension((RealParameter) bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, rateMatrixBoxes, rateMatrixModelVals, newDim, bdmm.migrationMatrix.getTipText());
              
              
              System.out.println(" r0ModelVals " + r0ModelVals.size());
@@ -227,10 +227,10 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
                      sbfreqs.append(Double.toString(fr));
 
              }
-            
-             bdmm.frequencies.get().valuesInput.setValue(sbfreqs.toString(), bdmm.frequencies.get());
-             bdmm.frequencies.get().setDimension(newDim);
-             bdmm.frequencies.get().initAndValidate();
+
+			((RealParameter) bdmm.frequencies.get()).valuesInput.setValue(sbfreqs.toString(), (RealParameter) bdmm.frequencies.get());
+			((RealParameter) bdmm.frequencies.get()).setDimension(newDim);
+			((RealParameter) bdmm.frequencies.get()).initAndValidate();
              bdmm.stateNumber.setValue(newDim, bdmm);
              //bdmm.setInputValue("stateNumber", newDim);
              
@@ -273,7 +273,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         
         // Add estimate checkbox
         if (checkBox != null) {
-	        checkBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+	        checkBox.setSelected(((RealParameter) bdmm.R0.get()).isEstimatedInput.get());
 	        checkBox.setTooltip(new Tooltip("Estimate value of this parameter in the MCMC chain"));
 	        
 	        
@@ -298,7 +298,6 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param param
      * @param name
      * @param hboxes
-     * @param vector
      * @param checkBox
      * @param tooltip
      * @param ndim
@@ -344,7 +343,7 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
         
         // Add estimate checkbox
         if (checkBox != null) {
-	        checkBox.setSelected(bdmm.R0.get().isEstimatedInput.get());
+	        checkBox.setSelected(((RealParameter) bdmm.R0.get()).isEstimatedInput.get());
 	        checkBox.setTooltip(new Tooltip("Estimate value of this parameter in the MCMC chain"));
 	        
 	        
@@ -405,7 +404,6 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     /**
      * Saves a parameter from the gui to bdmm
      * @param param
-     * @param vector
      */
     private void saveMatrix(RealParameter param, List<List<TextField>> matrix, Boolean selected, int ndim) {
     	
@@ -475,10 +473,6 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     /**
      * Same as above but for a matrix
      * @param param
-     * @param rateMatrixModelVals2
-     * @param rateMatrixBoxes2
-     * @param rateMatrixEstCheckBox2
-     * @param tipText
      */
     private void loadMatrix(RealParameter param, VBox vbox, List<List<TextField>> matrix, List<HBox> hboxes, CheckBox checkBox, String tooltip, int ndim) {
 		
@@ -565,8 +559,6 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
      * @param vbox
      * @param hboxes
      * @param matrix
-     * @param oldDim
-     * @param newDim
      * @param tooltip
      */
     private void setMatrixDimension(RealParameter param, VBox vbox, List<HBox> hboxes, List<List<TextField>> matrix, int ndim, String tooltip) {
@@ -663,11 +655,11 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     	
     	dimSpinner.getValueFactory().setValue(ndim);
     
-    	this.loadParameter(bdmm.R0.get(), r0ModelVals, r0Box, R0EstCheckBox, bdmm.R0.getTipText());
-    	this.loadParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaBox, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText());
-    	this.loadParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingBox, samplingEstCheckBox, bdmm.samplingProportion.getTipText());
-    	this.loadParameter(bdmm.samplingRateChangeTimesInput.get(), samplingChangeModelVals, samplingChangeBox, null, bdmm.samplingRateChangeTimesInput.getTipText());
-    	this.loadMatrix(bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, rateMatrixModelVals, rateMatrixBoxes, rateMatrixEstCheckBox, bdmm.migrationMatrix.getTipText(), ndim);
+    	this.loadParameter((RealParameter) bdmm.R0.get(), r0ModelVals, r0Box, R0EstCheckBox, bdmm.R0.getTipText());
+    	this.loadParameter((RealParameter) bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaBox, deltaEstCheckBox, bdmm.becomeUninfectiousRate.getTipText());
+    	this.loadParameter((RealParameter) bdmm.samplingProportion.get(), samplingModelVals, samplingBox, samplingEstCheckBox, bdmm.samplingProportion.getTipText());
+    	this.loadParameter((RealParameter) bdmm.samplingRateChangeTimesInput.get(), samplingChangeModelVals, samplingChangeBox, null, bdmm.samplingRateChangeTimesInput.getTipText());
+    	this.loadMatrix((RealParameter) bdmm.migrationMatrix.get(), rateMatrixTextFieldBox, rateMatrixModelVals, rateMatrixBoxes, rateMatrixEstCheckBox, bdmm.migrationMatrix.getTipText(), ndim);
     	
     	
     	
@@ -682,18 +674,18 @@ public class BirthDeathMigrationInputEditor extends InputEditor.Base {
     	
     	
     	// Parse parameters
-    	this.saveParameter(bdmm.R0.get(), r0ModelVals, R0EstCheckBox.isSelected(), ndim);
-    	this.saveParameter(bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaEstCheckBox.isSelected(), ndim);
-    	this.saveParameter(bdmm.samplingProportion.get(), samplingModelVals, samplingEstCheckBox.isSelected(), ndim*2);
-    	this.saveParameter(bdmm.samplingRateChangeTimesInput.get(), samplingChangeModelVals, null, 2);
-    	this.saveMatrix(bdmm.migrationMatrix.get(), rateMatrixModelVals, rateMatrixEstCheckBox.isSelected(), ndim);
+    	this.saveParameter((RealParameter) bdmm.R0.get(), r0ModelVals, R0EstCheckBox.isSelected(), ndim);
+    	this.saveParameter((RealParameter) bdmm.becomeUninfectiousRate.get(), deltaModelVals, deltaEstCheckBox.isSelected(), ndim);
+    	this.saveParameter((RealParameter) bdmm.samplingProportion.get(), samplingModelVals, samplingEstCheckBox.isSelected(), ndim*2);
+    	this.saveParameter((RealParameter) bdmm.samplingRateChangeTimesInput.get(), samplingChangeModelVals, null, 2);
+    	this.saveMatrix((RealParameter) bdmm.migrationMatrix.get(), rateMatrixModelVals, rateMatrixEstCheckBox.isSelected(), ndim);
     	
     	try {
-            bdmm.R0.get().initAndValidate();
-            bdmm.samplingProportion.get().initAndValidate();
-            bdmm.samplingRateChangeTimesInput.get().initAndValidate();
-            bdmm.becomeUninfectiousRate.get().initAndValidate();
-            bdmm.migrationMatrix.get().initAndValidate();
+			((RealParameter)bdmm.R0.get()).initAndValidate();
+			((RealParameter)bdmm.samplingProportion.get()).initAndValidate();
+			((RealParameter)bdmm.samplingRateChangeTimesInput.get()).initAndValidate();
+			((RealParameter)bdmm.becomeUninfectiousRate.get()).initAndValidate();
+			((RealParameter)bdmm.migrationMatrix.get()).initAndValidate();
             bdmm.initAndValidate();
         } catch (Exception ex) {
             ex.printStackTrace();
