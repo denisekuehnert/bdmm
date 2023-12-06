@@ -1,4 +1,4 @@
-<package name="BDMM" version="2.0.0">
+<package name="BDMM" version="2.0.2-unofficial">
   <depends on='BEAST.base' atleast='2.7.2'/>
   <depends on='BEAST.app' atleast='2.7.2'/>
   <depends on="MultiTypeTree" atleast="8.0.0"/>
