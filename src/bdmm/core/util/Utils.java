@@ -16,7 +16,7 @@ public class Utils {
      * @param m the total number of time intervals + 1 (the total number of time change events)
      * @return
      */
-    public static int index(Double t, Double[] times, int m) {
+    public static int index(double t, double[] times, int m) {
 
         int epoch = Arrays.binarySearch(times, t);
 

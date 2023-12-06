@@ -209,7 +209,7 @@ public class BirthDeathMigrationModelUncoloured extends PiecewiseBirthDeathMigra
 		if (print) System.out.println("\nlogP = " + logP);
 
 		if (Double.isInfinite(logP)) logP = Double.NEGATIVE_INFINITY;
-		if (SAModel && !(removalProbability.get().getDimension()==n && removalProbability.get().getValue()==1.)) {
+		if (SAModel && !(removalProbability.get().getDimension()==n && removalProbability.get().getArrayValue()==1.)) {
 			int internalNodeCount = tree.getLeafNodeCount() - ((Tree)tree).getDirectAncestorNodeCount()- 1;
 			logP +=  Math.log(2)*internalNodeCount;
 		}
