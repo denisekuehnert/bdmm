@@ -88,19 +88,19 @@ public class BirthDeathMigrationClusterModelUncoloured extends BirthDeathMigrati
 
 		birth = new double[n*totalIntervals];
 		death = new double[n*totalIntervals];
-		psi = new Double[n*totalIntervals];
-		b_ij = new Double[totalIntervals*(n*(n-1))];
-		M = new Double[totalIntervals*(n*(n-1))];
-		if (SAModel) r =  new Double[n * totalIntervals];
+		psi = new double[n*totalIntervals];
+		b_ij = new double[totalIntervals*(n*(n-1))];
+		M = new double[totalIntervals*(n*(n-1))];
+		if (SAModel) r =  new double[n * totalIntervals];
 
 		if (transform) {
 			transformParameters();
 		}
 		else {
 
-			Double[] birthAmongDemesRates = new Double[1];
+			double[] birthAmongDemesRates = new double[1];
 
-			if (birthAmongDemes) birthAmongDemesRates = birthRateAmongDemes.get().getValues();
+			if (birthAmongDemes) birthAmongDemesRates = birthRateAmongDemes.get().getDoubleValues();
 
 			updateBirthDeathPsiParams();
 
@@ -110,10 +110,10 @@ public class BirthDeathMigrationClusterModelUncoloured extends BirthDeathMigrati
 			}
 		}
 
-        Double[] migRates = migrationMatrix.get().getValues();
-        Double factor;
+        double[] migRates = migrationMatrix.get().getDoubleValues();
+        double factor;
         if (migrationMatrixScaleFactor.get()!=null) {
-            factor = migrationMatrixScaleFactor.get().getValue();
+            factor = migrationMatrixScaleFactor.get().getArrayValue();
             for (int i = 0; i < M.length; i++) M[i] *= factor;
         }
 
@@ -125,7 +125,7 @@ public class BirthDeathMigrationClusterModelUncoloured extends BirthDeathMigrati
         for (int i = 0; i < totalIntervals; i++)
             birth[i]*=getRateForCluster(clusterIndices[currentCluster.get()-1]);
 
-		freq = frequencies.get().getValues();
+		freq = frequencies.get().getDoubleValues();
 
 		setupIntegrators();
 

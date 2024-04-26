@@ -53,10 +53,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTreeDistribution {
 
 
-	public Input<RealParameter> frequencies =
+	public Input<Function> frequencies =
 			new Input<>("frequencies", "The frequencies for each type",  Input.Validate.REQUIRED);
 
-	public Input<RealParameter> origin =
+	public Input<Function> origin =
 			new Input<>("origin", "The origin of infection x1");
 
 	public Input<Boolean> originIsRootEdge =
@@ -75,30 +75,30 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			new Input<>("absTolerance", "absolute tolerance for numerical integration", 1e-100 /*Double.MIN_VALUE*/);
 
 	// the interval times for the migration rates
-	public Input<RealParameter> migChangeTimesInput =
+	public Input<Function> migChangeTimesInput =
 			new Input<>("migChangeTimes", "The times t_i specifying when migration rate changes occur", (RealParameter) null);
 
 	// the interval times for the birth rate
-	public Input<RealParameter> birthRateChangeTimesInput =
+	public Input<Function> birthRateChangeTimesInput =
 			new Input<>("birthRateChangeTimes", "The times t_i specifying when birth/R rate changes occur", (RealParameter) null);
 
 	// the interval times for the birth rate among demes
-	public Input<RealParameter> b_ijChangeTimesInput =
+	public Input<Function> b_ijChangeTimesInput =
 			new Input<>("birthRateAmongDemesChangeTimes", "The times t_i specifying when birth/R among demes changes occur", (RealParameter) null);
 
 	// the interval times for the death rate
-	public Input<RealParameter> deathRateChangeTimesInput =
+	public Input<Function> deathRateChangeTimesInput =
 			new Input<>("deathRateChangeTimes", "The times t_i specifying when death/becomeUninfectious rate changes occur", (RealParameter) null);
 
 	// the interval times for sampling rate
-	public Input<RealParameter> samplingRateChangeTimesInput =
+	public Input<Function> samplingRateChangeTimesInput =
 			new Input<>("samplingRateChangeTimes", "The times t_i specifying when sampling rate or sampling proportion changes occur", (RealParameter) null);
 
 	// the interval times for removal probability
-	public Input<RealParameter> removalProbabilityChangeTimesInput =
-			new Input<RealParameter>("removalProbabilityChangeTimes", "The times t_i specifying when removal probability changes occur", (RealParameter) null);
+	public Input<Function> removalProbabilityChangeTimesInput =
+			new Input<>("removalProbabilityChangeTimes", "The times t_i specifying when removal probability changes occur", (RealParameter) null);
 
-	public Input<RealParameter> intervalTimes =
+	public Input<Function> intervalTimes =
 			new Input<>("intervalTimes", "The time t_i for all parameters if they are the same", (RealParameter) null);
 
 	public Input<Boolean> migTimesRelativeInput =
@@ -124,7 +124,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 					"Careful, rate array must still be given in FORWARD time (root to tips).");
 
 	// the times for rho sampling
-	public Input<RealParameter> rhoSamplingTimes =
+	public Input<Function> rhoSamplingTimes =
 			new Input<>("rhoSamplingTimes", "The times t_i specifying when rho-sampling occurs", (RealParameter) null);
 	public Input<Boolean> contemp =
 			new Input<>("contemp", "Only contemporaneous sampling (i.e. all tips are from same sampling time, default false)", false);
@@ -133,37 +133,37 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			new Input<>("birthRate", "BirthRate = BirthRateVector * birthRateScalar, birthrate can change over time");
 	public Input<Function> deathRate =
 			new Input<>("deathRate", "The deathRate vector with birthRates between times");
-	public Input<RealParameter> samplingRate =
+	public Input<Function> samplingRate =
 			new Input<>("samplingRate", "The sampling rate per individual");      // psi
 
-	public Input<RealParameter> m_rho =
+	public Input<Function> m_rho =
 			new Input<>("rho", "The proportion of lineages sampled at rho-sampling times (default 0.)");
 
 
-	public Input<RealParameter> R0 =
+	public Input<Function> R0 =
 			new Input<>("R0", "The basic reproduction number");
-	public Input<RealParameter> becomeUninfectiousRate =
+	public Input<Function> becomeUninfectiousRate =
 			new Input<>("becomeUninfectiousRate", "Rate at which individuals become uninfectious (through recovery or sampling)", Input.Validate.XOR, deathRate);
-	public Input<RealParameter> samplingProportion =
+	public Input<Function> samplingProportion =
 			new Input<>("samplingProportion", "The samplingProportion = samplingRate / becomeUninfectiousRate", Input.Validate.XOR, samplingRate);
 
 	public Input<BooleanParameter> identicalRatesForAllTypesInput =
 			new Input<>("identicalRatesForAllTypes", "True if all types should have the same 1) birth 2) death 3) sampling 4) rho 5) r 6) migration rate. Default false.");
 
-	public Input<RealParameter> R0_base =
+	public Input<Function> R0_base =
 			new Input<>("R0_base",
 					"The basic reproduction number for the base pathogen class, should have the same dimension as " +
 							"the number of time intervals.");
-	public Input<RealParameter> lambda_ratio =
+	public Input<Function> lambda_ratio =
 			new Input<>("lambda_ratio",
 					"The ratio of basic infection rates of all other classes when compared to the base lambda, " +
 							"should have the dimension of the number of pathogens - 1, as it is kept constant over intervals.");
 
-	public Input<RealParameter> migrationMatrix =
+	public Input<Function> migrationMatrix =
 			new Input<>("migrationMatrix", "Flattened migration matrix, can be asymmetric, diagonal entries omitted");
 
 
-	public Input<RealParameter> migrationMatrixScaleFactor =
+	public Input<Function> migrationMatrixScaleFactor =
 			new Input<>("migrationMatrixScaleFactor", "A real number with which each migration rate entry is scaled.");
 
 	// adapted from SCMigrationModel class in package MultiTypeTree by Tim Vaughan
@@ -174,21 +174,21 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 					+ " (Default is to use all rates.)");
 
 
-	public Input<RealParameter> birthRateAmongDemes =
+	public Input<Function> birthRateAmongDemes =
 			new Input<>("birthRateAmongDemes", "birth rate vector with rate at which transmissions occur among locations");
 
-	public Input<RealParameter> R0AmongDemes =
+	public Input<Function> R0AmongDemes =
 			new Input<>("R0AmongDemes", "The basic reproduction number determining transmissions occur among locations");
 
 
-	public Input<RealParameter> removalProbability =
-			new Input<RealParameter>("removalProbability", "The probability of an individual to become noninfectious immediately after the sampling");
+	public Input<Function> removalProbability =
+			new Input<>("removalProbability", "The probability of an individual to become noninfectious immediately after the sampling");
 
 
 	public Input<Integer> stateNumber =
 			new Input<>("stateNumber", "The number of states or locations", Input.Validate.REQUIRED);
 
-	public Input<RealParameter> adjustTimesInput =
+	public Input<Function> adjustTimesInput =
 			new Input<>("adjustTimes", "Origin of MASTER sims which has to be deducted from the change time arrays");
 	// <!-- HACK ALERT for reestimation from MASTER sims: adjustTimes is used to correct the forward changetimes such that they don't include orig-root (when we're not estimating the origin) -->
 
@@ -203,7 +203,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	//If a large number a cores is available (more than 8 or 10) the calculation speed can be increased by diminishing the parallelization factor
 	//On the contrary, if only 2-4 cores are available, a slightly higher value (1/5 to 1/8) can be beneficial to the calculation speed.
 	public Input<Double> minimalProportionForParallelizationInput = new Input<>("parallelizationFactor", "the minimal relative size the two children subtrees of a node" +
-			" must have to start parallel calculations on the children. (default: 1/10). ", new Double(1/10));
+			" must have to start parallel calculations on the children. (default: 1/10). ", 0.1);
 
 
 	public static boolean isParallelizedCalculation;
@@ -227,9 +227,9 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	// these four arrays are totalIntervals in length
 	protected double[] birth;
 	double[] death;
-	Double[] psi;
-	static  volatile Double[] rho;
-	Double[] r;
+	double[] psi;
+	static  volatile double[] rho;
+	double[] r;
 
 	/**
 	 * The number of change points in the birth rate, b_ij, death rate, sampling rate, rho, r
@@ -264,12 +264,12 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	protected List<Double> deathRateChangeTimes = new ArrayList<>();
 	protected List<Double> samplingRateChangeTimes = new ArrayList<>();
 	protected List<Double> rhoSamplingChangeTimes = new ArrayList<>();
-	protected List<Double> rChangeTimes = new ArrayList<Double>();
+	protected List<Double> rChangeTimes = new ArrayList<>();
 
 	Boolean contempData;
 	SortedSet<Double> timesSet = new TreeSet<>();
 
-	protected static volatile Double[] times = new Double[]{0.};
+	protected static volatile double[] times = new double[]{0.};
 
 	protected Boolean transform;
 
@@ -281,11 +281,11 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	Boolean rTimesRelative = false;
 	Boolean[] reverseTimeArrays;
 
-	Double[] M;
-	Double[] b_ij;
+	double[] M;
+	double[] b_ij;
 	Boolean birthAmongDemes = false;
 
-	Double[] freq;
+	double[] freq;
 
 	static double[][] pInitialConditions;
 
@@ -330,7 +330,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 		Double factor;
 		if (migrationMatrix.get()!=null) {
-			M = migrationMatrix.get().getValues();
+			M = migrationMatrix.get().getDoubleValues();
 
 			if (rateMatrixFlagsInput.get() != null) {
 				rateMatrixFlags = rateMatrixFlagsInput.get();
@@ -347,7 +347,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 
 			if (migrationMatrixScaleFactor.get()!=null) {
-				factor = migrationMatrixScaleFactor.get().getValue();
+				factor = migrationMatrixScaleFactor.get().getArrayValue();
 				for (int i = 0; i < M.length; i++) M[i] *= factor;
 			}
 
@@ -395,14 +395,14 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 			transform = false;
 			death = deathRate.get().getDoubleValues();
-			psi = samplingRate.get().getValues();
+			psi = samplingRate.get().getDoubleValues();
 			birth = birthRate.get().getDoubleValues();
-			if (SAModel) r = removalProbability.get().getValues();
+			if (SAModel) r = removalProbability.get().getDoubleValues();
 
 			if (birthRateAmongDemes.get()!=null ){
 
 				birthAmongDemes = true;
-				b_ij=birthRateAmongDemes.get().getValues();
+				b_ij=birthRateAmongDemes.get().getDoubleValues();
 			}
 		} else if ((R0.get() != null || (R0_base.get() != null && lambda_ratio.get() != null)) && becomeUninfectiousRate.get() != null && samplingProportion.get() != null) {
 			transform = true;
@@ -439,11 +439,11 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 		if (SAModel) rChanges = removalProbability.get().getDimension()/n -1;
 
 		if (m_rho.get()!=null) {
-			rho = m_rho.get().getValues();
+			rho = m_rho.get().getDoubleValues();
 			rhoChanges = m_rho.get().getDimension()/n - 1;
 		}
 
-		freq = frequencies.get().getValues();
+		freq = frequencies.get().getDoubleValues();
 
 		double freqSum = 0;
 		for (double f : freq) freqSum+= f;
@@ -560,8 +560,8 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			constantRho = !(m_rho.get().getDimension() > n);
 
 			if (m_rho.get().getDimension() <= n && (rhoSamplingTimes.get()==null || rhoSamplingTimes.get().getDimension() < 2)) {
-				if (!contempData && ((samplingProportion.get() != null && samplingProportion.get().getDimension() <= n && samplingProportion.get().getValue() == 0.) || // todo:  instead of samplingProportion.get().getValue() == 0. need checked that samplingProportion[i]==0 for all i=0..n-1
-						(samplingRate.get() != null && samplingRate.get().getDimension() <= 2 && samplingRate.get().getValue() == 0.))) {                              // todo:  instead of samplingRate.get().getValue() == 0. need checked that samplingRate[i]==0 for all i=0..n-1
+				if (!contempData && ((samplingProportion.get() != null && samplingProportion.get().getDimension() <= n && samplingProportion.get().getArrayValue() == 0.) || // todo:  instead of samplingProportion.get().getValue() == 0. need checked that samplingProportion[i]==0 for all i=0..n-1
+						(samplingRate.get() != null && samplingRate.get().getDimension() <= 2 && samplingRate.get().getArrayValue() == 0.))) {                              // todo:  instead of samplingRate.get().getValue() == 0. need checked that samplingRate[i]==0 for all i=0..n-1
 
 					// check if data set is contemp!
 					for (Node node : treeInput.get().getExternalNodes()){
@@ -578,17 +578,17 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 					throw new RuntimeException("when contemp=true, rho must have dimension 1 (or equal to the stateNumber)");
 
 				else {
-					rho = new Double[n*totalIntervals];
+					rho = new double[n*totalIntervals];
 					Arrays.fill(rho, 0.);
 					Arrays.fill(isRhoTip, true);
-					for (int i=1; i<=n; i++)  rho[i*totalIntervals - 1] = m_rho.get().getValue(i-1);
+					for (int i=1; i<=n; i++)  rho[i*totalIntervals - 1] = m_rho.get().getArrayValue(i-1);
 
 					rhoSamplingCount = 1;
 				}
 			}
 			else {
-				Double[] rhos = m_rho.get().getValues();
-				rho = new Double[n*totalIntervals];
+				double[] rhos = m_rho.get().getDoubleValues();
+				rho = new double[n*totalIntervals];
 				Arrays.fill(rho, 0.);
 				for (int i = 0; i < totalIntervals; i++) {
 					for (int j=0;j<n;j++){
@@ -600,7 +600,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 
 		} else {
-			rho = new Double[n*totalIntervals];
+			rho = new double[n*totalIntervals];
 			Arrays.fill(rho, 0.);
 		}
 
@@ -719,8 +719,8 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			}
 		}
 
+		times = timesSet.stream().mapToDouble(Double::doubleValue).toArray();
 
-		times = timesSet.toArray(new Double[timesSet.size()]);
 		// TODO potentially refactor with totalIntervals = times.length-1 so that totalIntervals really represents the number of time intervals
 		totalIntervals = times.length;
 
@@ -729,7 +729,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	/**
 	 * set change times
 	 */
-	public void getChangeTimes(double maxTime, List<Double> changeTimes, RealParameter intervalTimes, int numChanges, boolean relative, boolean reverse, boolean isPointEvent) {
+	public void getChangeTimes(double maxTime, List<Double> changeTimes, Function intervalTimes, int numChanges, boolean relative, boolean reverse, boolean isPointEvent) {
 		changeTimes.clear();
 
 		if (intervalTimes == null) { //equidistant
@@ -745,7 +745,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			changeTimes.add(end);
 
 		} else {
-			if (!reverse && intervalTimes.getValue(0) != 0.0 && !isPointEvent) {
+			if (!reverse && intervalTimes.getArrayValue(0) != 0.0 && !isPointEvent) {
 				throw new RuntimeException("First time in interval times parameter should always be zero.");
 			}
 
@@ -757,7 +757,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 			double end;
 			for (int i = (reverse?0:1); i < dim; i++) {
-				end = reverse ? (maxTime - intervalTimes.getValue(dim - i - 1)) : intervalTimes.getValue(i);
+				end = reverse ? (maxTime - intervalTimes.getArrayValue(dim - i - 1)) : intervalTimes.getArrayValue(i);
 				if (relative) end *= maxTime;
 				if (end < maxTime) changeTimes.add(end); //TODO does this mean that change times can never be input in absolute time? It looks like it does.
 			}
@@ -765,7 +765,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			if (adjustTimesInput.get()!=null){
 
 				double iTime;
-				double aTime = adjustTimesInput.get().getValue();
+				double aTime = adjustTimesInput.get().getArrayValue();
 
 				for (int i = 0 ; i < numChanges; i++){
 
@@ -792,12 +792,12 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 		double[] birthRates = birthRate.get().getDoubleValues();
 		double[] deathRates = deathRate.get().getDoubleValues();
-		Double[] samplingRates = samplingRate.get().getValues();
-		Double[] removalProbabilities = new Double[1];
+		double[] samplingRates = samplingRate.get().getDoubleValues();
+		double[] removalProbabilities = new double[1];
 
 		if (SAModel) {
-			removalProbabilities = removalProbability.get().getValues();
-			r =  new Double[n*totalIntervals];
+			removalProbabilities = removalProbability.get().getDoubleValues();
+			r =  new double[n*totalIntervals];
 		}
 
 		int state;
@@ -820,7 +820,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	}
 
 
-	void updateAmongParameter(Double[] param, Double[] paramFrom, int nrChanges, List<Double> changeTimes){
+	void updateAmongParameter(double[] param, double[] paramFrom, int nrChanges, List<Double> changeTimes){
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
@@ -840,8 +840,8 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 	void updateRho(){
 		if (m_rho.get() != null && (m_rho.get().getDimension()==1 ||  rhoSamplingTimes.get() != null)) {
 
-			Double[] rhos = m_rho.get().getValues();
-			rho = new Double[n*totalIntervals];
+			double[] rhos = m_rho.get().getDoubleValues();
+			rho = new double[n*totalIntervals];
 			int state;
 
 			for (int i = 0; i < totalIntervals*n; i++) {
@@ -885,18 +885,18 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 	public void transformWithinParameters(){
 
-		Double[] p = samplingProportion.get().getValues();
-		Double[] ds = becomeUninfectiousRate.get().getValues();
-		Double[] R;
+		double[] p = samplingProportion.get().getDoubleValues();
+		double[] ds = becomeUninfectiousRate.get().getDoubleValues();
+		double[] R;
 		if (R0.get() != null) {
-			R = R0.get().getValues();
+			R = R0.get().getDoubleValues();
 		} else {
-			Double[] l_ratio = lambda_ratio.get().getValues();
-			Double[] R_sens = R0_base.get().getValues();
+			double[] l_ratio = lambda_ratio.get().getDoubleValues();
+			double[] R_sens = R0_base.get().getDoubleValues();
 
 			int totalIntervals = R_sens.length;
 			int totalTypes = l_ratio.length + 1;
-			R = new Double[totalIntervals * totalTypes];
+			R = new double[totalIntervals * totalTypes];
 			for (int i=0; i < totalIntervals; i++) {
 				R[i] = R_sens[i];
 				for (int j=1; j < totalTypes; j++) {
@@ -906,8 +906,8 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 			}
 		}
 
-		Double[] removalProbabilities = new Double[1];
-		if (SAModel) removalProbabilities = removalProbability.get().getValues();
+		double[] removalProbabilities = new double[1];
+		if (SAModel) removalProbabilities = removalProbability.get().getDoubleValues();
 
 		int state;
 
@@ -955,8 +955,8 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 	public void transformAmongParameters(){
 
-		Double[] RaD = (birthAmongDemes) ? R0AmongDemes.get().getValues() : new Double[1];
-		Double[] ds = becomeUninfectiousRate.get().getValues();
+		double[] RaD = (birthAmongDemes) ? R0AmongDemes.get().getDoubleValues() : new double[1];
+		double[] ds = becomeUninfectiousRate.get().getDoubleValues();
 
 		if (birthAmongDemes)    {
 
@@ -999,12 +999,12 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 	void updateOrigin(Node root){
 
-		T = origin.get().getValue();
+		T = origin.get().getArrayValue();
 		orig = T - root.getHeight();
 
 		if (originIsRootEdge.get()) {
 
-			orig = origin.get().getValue();
+			orig = origin.get().getArrayValue();
 			T = orig + root.getHeight();
 		}
 
@@ -1150,19 +1150,19 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 		birth = new double[n*totalIntervals];
 		death = new double[n*totalIntervals];
-		psi = new Double[n*totalIntervals];
-		b_ij = new Double[totalIntervals*(n*(n-1))];
-		M = new Double[totalIntervals*(n*(n-1))];
-		if (SAModel) r =  new Double[n * totalIntervals];
+		psi = new double[n*totalIntervals];
+		b_ij = new double[totalIntervals*(n*(n-1))];
+		M = new double[totalIntervals*(n*(n-1))];
+		if (SAModel) r =  new double[n * totalIntervals];
 
 		if (transform) {
 			transformParameters();
 		}
 		else {
 
-			Double[] birthAmongDemesRates = new Double[1];
+			double[] birthAmongDemesRates = new double[1];
 
-			if (birthAmongDemes) birthAmongDemesRates = birthRateAmongDemes.get().getValues();
+			if (birthAmongDemes) birthAmongDemesRates = birthRateAmongDemes.get().getDoubleValues();
 
 			updateBirthDeathPsiParams();
 
@@ -1173,11 +1173,11 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 		}
 
 		if (migrationMatrix.get()!=null) {
-			Double[] migRates = migrationMatrix.get().getValues();
+			double[] migRates = migrationMatrix.get().getDoubleValues();
 
-			Double factor;
+			double factor;
 			if (migrationMatrixScaleFactor.get()!=null) {
-				factor = migrationMatrixScaleFactor.get().getValue();
+				factor = migrationMatrixScaleFactor.get().getArrayValue();
 				for (int i = 0; i < migRates.length; i++) migRates[i] *= factor;
 			}
 
@@ -1194,7 +1194,7 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 
 		updateRho();
 
-		freq = frequencies.get().getValues();
+		freq = frequencies.get().getDoubleValues();
 
 		setupIntegrators();
 
@@ -1235,9 +1235,9 @@ public abstract class PiecewiseBirthDeathMigrationDistribution extends SpeciesTr
 		int offset = getArrayOffset(i, j);
 
 		if (migrationMatrixScaleFactor.get()==null)
-			return migrationMatrix.get().getValue(offset);
+			return migrationMatrix.get().getArrayValue(offset);
 		else
-			return migrationMatrixScaleFactor.get().getValue()*migrationMatrix.get().getValue(offset);
+			return migrationMatrixScaleFactor.get().getArrayValue()*migrationMatrix.get().getArrayValue(offset);
 
 	}
 

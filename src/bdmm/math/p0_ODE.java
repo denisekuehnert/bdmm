@@ -16,18 +16,18 @@ import bdmm.core.util.Utils;
 public class p0_ODE implements FirstOrderDifferentialEquations {
 
 	double[] b;
-	Double[] b_ij;
+	double[] b_ij;
 	double[] d;
-	Double[] s;
+	double[] s;
 
-	Double[] M;
+	double[] M;
 
 	int dimension;
 	int intervals;
-	Double[] times;
+	double[] times;
 	int index;
 
-	public p0_ODE(double[] b, Double[] b_ij, double[] d, Double[] s, Double[] M, int dimension , int intervals, Double[] times) {
+	public p0_ODE(double[] b, double[] b_ij, double[] d, double[] s, double[] M, int dimension , int intervals, double[] times) {
 
 		this.b = b;
 		this.b_ij = b_ij;
@@ -42,7 +42,7 @@ public class p0_ODE implements FirstOrderDifferentialEquations {
 	}
 
 	// updateRates is not used here because a new p0_ODE is created each time PiecewiseBirthDeathMigrationDistribution.updateRates() is called (called through setUpIntegrators())
-	public void updateRates(double[] b, Double[] b_ij, double[] d, Double[] s, Double[] M, Double[] times){
+	public void updateRates(double[] b, double[] b_ij, double[] d, double[] s, double[] M, double[] times){
 
 		this.b = b;
 		this.b_ij = b_ij;
@@ -80,7 +80,7 @@ public class p0_ODE implements FirstOrderDifferentialEquations {
 						yDot[i] -= b_ij[l]*y[i]*y[j];
 					}
 
-					if (M[0]!=null) {// migration:
+					if (M!=null) {// migration:
 						yDot[i] += M[l] * y[i];
 						yDot[i] -= M[l] * y[j];
 					}
@@ -100,11 +100,11 @@ public class p0_ODE implements FirstOrderDifferentialEquations {
 		// 2d test
 		double[] b = {1.03,1.06};
 		double[] d = {1.,1.};
-		Double[] s = {0.02,0.04};
-		Double[] M = new Double[]{3.,4.};
+		double[] s = {0.02,0.04};
+		double[] M = new double[]{3.,4.};
 
 		FirstOrderIntegrator integrator = new DormandPrince853Integrator(1.0e-8, 100.0, 1.0e-20, 1.0e-9);//new ClassicalRungeKuttaIntegrator(.01); //
-		FirstOrderDifferentialEquations ode = new p0_ODE(b,null,d,s,M, 2, 1, new Double[]{0.});
+		FirstOrderDifferentialEquations ode = new p0_ODE(b,null,d,s,M, 2, 1, new double[]{0.});
 		double[] y0 = new double[]{1.,1.};
 		double[] y = new double[2];
 

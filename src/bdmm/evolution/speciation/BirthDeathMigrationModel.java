@@ -196,7 +196,7 @@ public class BirthDeathMigrationModel extends PiecewiseBirthDeathMigrationDistri
 
 		if (Double.isInfinite(logP)) logP = Double.NEGATIVE_INFINITY;
 
-		if (SAModel && !(removalProbability.get().getDimension()==n && removalProbability.get().getValue()==1.)) {
+		if (SAModel && !(removalProbability.get().getDimension()==n && removalProbability.get().getArrayValue()==1.)) {
 			int internalNodeCount = tree.getLeafNodeCount() - ((Tree)tree).getDirectAncestorNodeCount()- 1;
 			logP +=  Math.log(2)*internalNodeCount;
 		}
@@ -283,7 +283,7 @@ public class BirthDeathMigrationModel extends PiecewiseBirthDeathMigrationDistri
 			System.arraycopy(g.conditionsOnP, 0, init.conditionsOnP, 0, n);
 			if (birthAmongDemes) // this might be a birth among demes where only the child with the different type got sampled
 				init.conditionsOnG[prevcol] = g.conditionsOnG[col].scalarMultiply(b_ij[totalIntervals * (prevcol * (n - 1) + (col < prevcol ? col : col - 1)) + index]);
-			if (M[0]!=null)     // or it really is a migration event
+			if (M!=null)     // or it really is a migration event
 				init.conditionsOnG[prevcol] = g.conditionsOnG[col].scalarMultiply(M[totalIntervals * (prevcol * (n - 1) + (col < prevcol ? col : col - 1)) + index]);
 
 			return getG(from, init, to, PG, node, true);
@@ -448,7 +448,7 @@ public class BirthDeathMigrationModel extends PiecewiseBirthDeathMigrationDistri
 
 		if (count>0){
 
-			if (originBranch.getChangeTime(0) < root.getHeight() || originBranch.getChangeTime(count-1) > origin.get().getValue() )
+			if (originBranch.getChangeTime(0) < root.getHeight() || originBranch.getChangeTime(count-1) > origin.get().getArrayValue() )
 				return false;
 
 			if (!allowChangeAtNode && originBranch.getChangeType(0) == root.getFinalType())
